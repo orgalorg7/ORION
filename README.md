@@ -65,6 +65,16 @@ Open http://localhost:5173 — register a new workspace, or use the demo login:
 - `frontend/.env` (see `frontend/.env.example`) — `VITE_API_URL` if the API is not on
   `http://localhost:8000/api/v1`.
 
+## Deploy on Railway
+
+The root `Dockerfile` builds the React frontend and serves it together with Django through Gunicorn.
+Connect this repository to a Railway service and each push to `main` will deploy automatically.
+
+For production, set `SECRET_KEY` and `DEBUG=False` in the service variables. Add a Railway PostgreSQL
+service and reference its `DATABASE_URL` from the app service for persistent data; without it, the app
+falls back to ephemeral SQLite storage. Finally, generate a public domain from the service's Networking
+settings. Railway supplies `PORT` and its public domain to the container automatically.
+
 ## Architecture notes
 
 - **Multi-tenancy:** shared database/schema. Every tenant model inherits `TenantModel`

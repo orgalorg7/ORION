@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+**/.venv
+**/__pycache__
+**/*.py[cod]
+**/node_modules
+**/dist
+**/dist-*
+**/.env
+backend/db.sqlite3
+brand
+marketing
+*.log
+.DS_Store

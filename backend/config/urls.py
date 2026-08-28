@@ -29,5 +29,6 @@ if (FRONTEND_DIST / 'index.html').exists():
 
     urlpatterns += [
         re_path(r'^assets/(?P<path>.*)$', static_serve, {'document_root': FRONTEND_DIST / 'assets'}),
+        re_path(r'^(?P<path>[^?]*\.[^/?]+)$', static_serve, {'document_root': FRONTEND_DIST}),
         re_path(r'^(?!api/|admin/|assets/).*$', spa_index),
     ]

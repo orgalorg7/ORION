@@ -2,14 +2,22 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import dj_database_url
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-only-key-do-not-use-in-production')
-DEBUG = os.getenv('DEBUG', 'True').lower() in ('1', 'true', 'yes')
+default_debug = 'False' if os.getenv('RAILWAY_ENVIRONMENT_NAME') else 'True'
+DEBUG = os.getenv('DEBUG', default_debug).lower() in ('1', 'true', 'yes')
 ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if h.strip()]
+
+railway_domain = os.getenv('RAILWAY_PUBLIC_DOMAIN')
+if railway_domain and railway_domain not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(railway_domain)
+if os.getenv('RAILWAY_ENVIRONMENT_NAME') and '.railway.app' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('.railway.app')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,6 +46,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,15 +75,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
-if os.getenv('POSTGRES_DB'):
+if os.getenv('DATABASE_URL'):
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600, conn_health_checks=True),
+    }
+elif os.getenv('PGDATABASE') or os.getenv('POSTGRES_DB'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('POSTGRES_DB'),
-            'USER': os.getenv('POSTGRES_USER', 'postgres'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-            'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
-            'PORT': os.getenv('POSTGRES_PORT', '5432'),
+            'NAME': os.getenv('PGDATABASE', os.getenv('POSTGRES_DB')),
+            'USER': os.getenv('PGUSER', os.getenv('POSTGRES_USER', 'postgres')),
+            'PASSWORD': os.getenv('PGPASSWORD', os.getenv('POSTGRES_PASSWORD', '')),
+            'HOST': os.getenv('PGHOST', os.getenv('POSTGRES_HOST', 'localhost')),
+            'PORT': os.getenv('PGPORT', os.getenv('POSTGRES_PORT', '5432')),
         }
     }
 else:
@@ -121,6 +134,23 @@ CORS_ALLOWED_ORIGINS = [
     for o in os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(',')
     if o.strip()
 ]
+if railway_domain:
+    railway_origin = f'https://{railway_domain}'
+    if railway_origin not in CORS_ALLOWED_ORIGINS:
+        CORS_ALLOWED_ORIGINS.append(railway_origin)
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+    if origin.strip()
+]
+if railway_domain:
+    railway_origin = f'https://{railway_domain}'
+    if railway_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(railway_origin)
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 if DEBUG:
     # In development, Vite may fall back to another port when 5173 is taken.
     CORS_ALLOWED_ORIGIN_REGEXES = [r'^http://(localhost|127\.0\.0\.1):\d+$']
@@ -141,6 +171,14 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
