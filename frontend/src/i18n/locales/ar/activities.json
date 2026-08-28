@@ -1,0 +1,33 @@
+{
+  "title": "الأنشطة والمهام",
+  "subtitle_zero": "لا توجد أنشطة أو مهام في مساحة عملك",
+  "subtitle_one": "نشاط واحد في مساحة عملك",
+  "subtitle_two": "نشاطان في مساحة عملك",
+  "subtitle_few": "{{count}} أنشطة في مساحة عملك",
+  "subtitle_many": "{{count}} نشاطًا في مساحة عملك",
+  "subtitle_other": "{{count}} نشاط في مساحة عملك",
+  "tabs": {
+    "upcoming": "القادمة",
+    "overdue": "المتأخرة",
+    "completed": "المكتملة"
+  },
+  "filters": {
+    "allTypes": "جميع الأنواع",
+    "allMembers": "جميع الأعضاء"
+  },
+  "fields": {
+    "type": "النوع",
+    "title": "العنوان",
+    "related": "مرتبط بـ"
+  },
+  "relatedTypes": {
+    "contact": "جهة اتصال",
+    "company": "شركة",
+    "deal": "صفقة",
+    "lead": "عميل محتمل"
+  },
+  "form": {
+    "createTitle": "نشاط جديد",
+    "editTitle": "تعديل النشاط"
+  }
+}

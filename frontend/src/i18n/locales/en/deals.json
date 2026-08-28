@@ -1,0 +1,52 @@
+{
+  "title": "Deals",
+  "subtitle": "Track your deals across pipeline stages",
+  "addDeal": "Add deal",
+  "tabs": {
+    "board": "Board",
+    "won": "Won",
+    "lost": "Lost"
+  },
+  "status": {
+    "open": "Open",
+    "won": "Won",
+    "lost": "Lost"
+  },
+  "fields": {
+    "title": "Title",
+    "value": "Value",
+    "pipeline": "Pipeline",
+    "stage": "Stage",
+    "contact": "Contact",
+    "company": "Company",
+    "expectedCloseDate": "Expected close",
+    "closedAt": "Closed at",
+    "lostReason": "Lost reason"
+  },
+  "actions": {
+    "markWon": "Mark won",
+    "markLost": "Mark lost",
+    "reopen": "Reopen"
+  },
+  "form": {
+    "createTitle": "New deal",
+    "editTitle": "Edit deal"
+  },
+  "lostModal": {
+    "title": "Mark deal as lost",
+    "reasonPlaceholder": "Why was this deal lost?"
+  },
+  "board": {
+    "noPipelines": "No pipelines found",
+    "noPipelinesHint": "Create a pipeline to start tracking deals.",
+    "noStages": "This pipeline has no stages",
+    "noStagesHint": "Add stages to this pipeline to organize your deals.",
+    "empty": "No open deals in this pipeline",
+    "emptyHint": "Create a deal to see it on the board.",
+    "unstaged": "Unstaged"
+  },
+  "empty": {
+    "won": "No won deals yet",
+    "lost": "No lost deals yet"
+  }
+}

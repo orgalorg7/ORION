@@ -1,0 +1,31 @@
+{
+  "title": "Companies",
+  "subtitle_one": "{{count}} company in your workspace",
+  "subtitle_other": "{{count}} companies in your workspace",
+  "addCompany": "Add company",
+  "fields": {
+    "domain": "Domain",
+    "industry": "Industry",
+    "size": "Company size",
+    "website": "Website",
+    "annualRevenue": "Annual revenue",
+    "contactsCount": "Contacts",
+    "location": "Location",
+    "jobTitle": "Job title"
+  },
+  "sizes": {
+    "1-10": "1–10 employees",
+    "11-50": "11–50 employees",
+    "51-200": "51–200 employees",
+    "201-1000": "201–1,000 employees",
+    "1000+": "1,000+ employees"
+  },
+  "form": {
+    "createTitle": "New company",
+    "editTitle": "Edit company"
+  },
+  "detail": {
+    "contacts": "Contacts",
+    "noContacts": "No contacts linked to this company yet"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "title": "Contacts",
+  "subtitle_one": "{{count}} contact in your workspace",
+  "subtitle_other": "{{count}} contacts in your workspace",
+  "addContact": "Add contact",
+  "fields": {
+    "jobTitle": "Job title",
+    "company": "Company"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "form": {
+    "createTitle": "New contact",
+    "editTitle": "Edit contact"
+  }
+}

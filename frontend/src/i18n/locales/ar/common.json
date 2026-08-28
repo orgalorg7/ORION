@@ -1,0 +1,161 @@
+{
+  "appName": "Korzah CRM",
+  "brand": {
+    "tagline": "علاقات تُبنى لتدوم.",
+    "eyebrow": "هيكل متكامل لعلاقاتك العقارية",
+    "statement": "نظام عمل واضح يجمع كل عميل محتمل وصفقة وعلاقة ومحادثة عقارية."
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "leads": "العملاء المحتملون",
+    "contacts": "جهات الاتصال",
+    "companies": "الشركات",
+    "deals": "الصفقات",
+    "activities": "الأنشطة",
+    "tickets": "التذاكر",
+    "employees": "الموظفون",
+    "settings": "الإعدادات",
+    "crm": "إدارة العملاء",
+    "workspace": "مساحة العمل"
+  },
+  "actions": {
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ…",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "create": "إنشاء",
+    "add": "إضافة",
+    "search": "بحث…",
+    "filter": "تصفية",
+    "clear": "مسح",
+    "close": "إغلاق",
+    "confirm": "تأكيد",
+    "back": "رجوع",
+    "view": "عرض",
+    "retry": "إعادة المحاولة",
+    "logout": "تسجيل الخروج",
+    "export": "تصدير",
+    "import": "استيراد",
+    "more": "المزيد"
+  },
+  "labels": {
+    "name": "الاسم",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "status": "الحالة",
+    "owner": "المسؤول",
+    "assignedTo": "مُسند إلى",
+    "source": "المصدر",
+    "tags": "الوسوم",
+    "address": "العنوان",
+    "city": "المدينة",
+    "country": "الدولة",
+    "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "آخر تحديث",
+    "description": "الوصف",
+    "actions": "إجراءات",
+    "all": "الكل",
+    "none": "لا يوجد",
+    "yes": "نعم",
+    "no": "لا",
+    "optional": "اختياري",
+    "language": "اللغة",
+    "theme": "المظهر",
+    "role": "الدور",
+    "notSet": "غير محدد",
+    "details": "التفاصيل",
+    "overview": "نظرة عامة",
+    "total": "الإجمالي"
+  },
+  "sources": {
+    "website": "الموقع الإلكتروني",
+    "referral": "إحالة",
+    "social": "وسائل التواصل",
+    "email_campaign": "حملة بريدية",
+    "event": "فعالية",
+    "cold_call": "اتصال مباشر",
+    "other": "أخرى"
+  },
+  "roles": {
+    "owner": "المالك",
+    "admin": "مدير النظام",
+    "manager": "مدير",
+    "member": "عضو"
+  },
+  "pagination": {
+    "showing": "عرض {{from}}–{{to}} من {{formattedCount}}",
+    "previous": "السابق",
+    "next": "التالي"
+  },
+  "state": {
+    "loading": "جارٍ التحميل…",
+    "empty": "لا يوجد شيء هنا بعد",
+    "emptyHint": "ابدأ بإنشاء أول سجل.",
+    "error": "حدث خطأ ما",
+    "notFound": "غير موجود",
+    "noResults": "لا توجد نتائج مطابقة لبحثك"
+  },
+  "confirmDelete": {
+    "title": "حذف {{item}}؟",
+    "message": "لا يمكن التراجع عن هذا الإجراء."
+  },
+  "toast": {
+    "saved": "تم الحفظ بنجاح",
+    "created": "تم الإنشاء بنجاح",
+    "deleted": "تم الحذف بنجاح",
+    "error": "حدث خطأ ما"
+  },
+  "errors": {
+    "requestFailed": "تعذر إكمال الطلب. يرجى المحاولة مرة أخرى.",
+    "network": "تعذر الاتصال بالخادم. تحقق من اتصالك وحاول مرة أخرى.",
+    "unauthorized": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى.",
+    "required": "هذا الحقل مطلوب.",
+    "invalidEmail": "يرجى إدخال بريد إلكتروني صحيح.",
+    "invalidPhone": "يرجى إدخال رقم هاتف صحيح.",
+    "emailExists": "يوجد حساب مسجل بهذا البريد الإلكتروني بالفعل.",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    "permissionDenied": "ليس لديك صلاحية لتنفيذ هذا الإجراء.",
+    "notFound": "لم يتم العثور على السجل المطلوب.",
+    "alreadyExists": "هذا السجل موجود بالفعل.",
+    "invalidSelection": "يرجى اختيار قيمة صحيحة.",
+    "passwordTooShort": "كلمة المرور قصيرة جدًا.",
+    "positiveValue": "يجب أن تكون القيمة أكبر من صفر.",
+    "endAfterStart": "يجب أن يكون تاريخ النهاية بعد تاريخ البداية."
+  },
+  "accessibility": {
+    "mainContent": "المحتوى الرئيسي",
+    "openNavigation": "فتح قائمة التنقل",
+    "closeNavigation": "إغلاق قائمة التنقل",
+    "userMenu": "فتح قائمة المستخدم",
+    "backToList": "الرجوع إلى القائمة",
+    "dismissNotification": "إغلاق الإشعار"
+  },
+  "theme": {
+    "light": "الوضع الفاتح",
+    "dark": "الوضع الداكن"
+  },
+  "notes": {
+    "title": "الملاحظات",
+    "placeholder": "اكتب ملاحظة…",
+    "add": "إضافة ملاحظة",
+    "empty": "لا توجد ملاحظات بعد",
+    "deleteNote": "حذف الملاحظة"
+  },
+  "activitiesPanel": {
+    "title": "الأنشطة",
+    "add": "إضافة نشاط",
+    "empty": "لا توجد أنشطة بعد",
+    "titlePlaceholder": "ما الذي يجب إنجازه؟",
+    "dueAt": "تاريخ الاستحقاق",
+    "completed": "مكتمل",
+    "types": {
+      "call": "مكالمة",
+      "email": "بريد إلكتروني",
+      "meeting": "اجتماع",
+      "task": "مهمة"
+    }
+  }
+}

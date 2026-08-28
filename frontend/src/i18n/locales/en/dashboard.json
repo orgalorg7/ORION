@@ -1,0 +1,39 @@
+{
+  "title": "Dashboard",
+  "welcome": "Welcome back, {{name}} — here's what's happening today.",
+  "welcomeGeneric": "Welcome back — here's what's happening today.",
+  "stats": {
+    "contacts": "Contacts",
+    "companies": "Companies",
+    "openDealsValue": "Open deals value",
+    "openDealsCount": "Open deals: {{total}}",
+    "wonThisMonth": "Won this month",
+    "wonDealsCount": "Deals won: {{total}}",
+    "newLeadsThisMonth": "New leads this month",
+    "openTickets": "Open tickets"
+  },
+  "charts": {
+    "revenue": "Revenue",
+    "revenueSubtitle": "Won deal value by month",
+    "pipeline": "Pipeline by stage",
+    "leadsByStatus": "Leads by status",
+    "leadsBySource": "Leads by source"
+  },
+  "lists": {
+    "upcomingActivities": "Upcoming activities",
+    "topDeals": "Top open deals"
+  },
+  "empty": {
+    "revenue": "No revenue recorded yet",
+    "pipeline": "No open deals in the pipeline",
+    "leads": "No leads yet",
+    "activities": "No upcoming activities",
+    "activitiesHint": "Scheduled activities will appear here.",
+    "deals": "No open deals",
+    "dealsHint": "Your highest-value open deals will appear here."
+  },
+  "error": {
+    "title": "Couldn't load the dashboard",
+    "description": "Please try again."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "title": "جهات الاتصال",
+  "subtitle_zero": "لا توجد جهات اتصال في مساحة عملك",
+  "subtitle_one": "جهة اتصال واحدة في مساحة عملك",
+  "subtitle_two": "جهتا اتصال في مساحة عملك",
+  "subtitle_few": "{{count}} جهات اتصال في مساحة عملك",
+  "subtitle_many": "{{count}} جهة اتصال في مساحة عملك",
+  "subtitle_other": "{{count}} جهة اتصال في مساحة عملك",
+  "addContact": "إضافة جهة اتصال",
+  "fields": {
+    "jobTitle": "المسمى الوظيفي",
+    "company": "الشركة"
+  },
+  "status": {
+    "active": "نشط",
+    "inactive": "غير نشط"
+  },
+  "form": {
+    "createTitle": "جهة اتصال جديدة",
+    "editTitle": "تعديل جهة الاتصال"
+  }
+}

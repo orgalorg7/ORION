@@ -1,0 +1,50 @@
+{
+  "title": "Support tickets",
+  "subtitle_one": "{{count}} ticket in your workspace",
+  "subtitle_other": "{{count}} tickets in your workspace",
+  "addTicket": "New ticket",
+  "fields": {
+    "number": "Number",
+    "subject": "Subject",
+    "contact": "Contact",
+    "priority": "Priority",
+    "category": "Category",
+    "comments": "Comments",
+    "unassigned": "Unassigned"
+  },
+  "statuses": {
+    "open": "Open",
+    "in_progress": "In progress",
+    "resolved": "Resolved",
+    "closed": "Closed"
+  },
+  "priorities": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "categories": {
+    "general": "General",
+    "billing": "Billing",
+    "technical": "Technical",
+    "feature_request": "Feature request"
+  },
+  "filters": {
+    "allStatuses": "All statuses",
+    "allPriorities": "All priorities"
+  },
+  "form": {
+    "createTitle": "New ticket",
+    "editTitle": "Edit ticket"
+  },
+  "conversation": {
+    "title": "Conversation",
+    "empty": "No comments yet",
+    "emptyHint": "Start the conversation by adding the first comment.",
+    "placeholder": "Write a reply…",
+    "internal": "Internal",
+    "internalNote": "Internal note",
+    "send": "Send"
+  }
+}

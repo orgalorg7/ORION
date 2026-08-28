@@ -1,0 +1,63 @@
+{
+  "title": "الموظفون",
+  "subtitle_zero": "لا يوجد موظفون في مساحة عملك",
+  "subtitle_one": "موظف واحد في مساحة عملك",
+  "subtitle_two": "موظفان في مساحة عملك",
+  "subtitle_few": "{{count}} موظفين في مساحة عملك",
+  "subtitle_many": "{{count}} موظفًا في مساحة عملك",
+  "subtitle_other": "{{count}} موظف في مساحة عملك",
+  "addEmployee": "إضافة موظف",
+  "departments": "الأقسام",
+  "allDepartments": "جميع الأقسام",
+  "allTypes": "جميع الأنواع",
+  "fields": {
+    "jobTitle": "المسمى الوظيفي",
+    "department": "القسم",
+    "employmentType": "نوع التوظيف",
+    "hireDate": "تاريخ التعيين",
+    "salary": "الراتب",
+    "manager": "المدير المباشر",
+    "linkedAccount": "الحساب المرتبط",
+    "linkedAccountHint": "يربط هذا الموظف بحساب تسجيل دخول في مساحة العمل."
+  },
+  "statuses": {
+    "active": "على رأس العمل",
+    "on_leave": "في إجازة",
+    "terminated": "منتهي الخدمة"
+  },
+  "types": {
+    "full_time": "دوام كامل",
+    "part_time": "دوام جزئي",
+    "contract": "عقد",
+    "intern": "متدرب"
+  },
+  "form": {
+    "createTitle": "موظف جديد",
+    "editTitle": "تعديل بيانات الموظف"
+  },
+  "departmentsModal": {
+    "title": "الأقسام",
+    "namePlaceholder": "اسم القسم",
+    "saveName": "حفظ الاسم",
+    "deleteDepartment": "حذف القسم",
+    "employeesCount_zero": "لا يوجد موظفون",
+    "employeesCount_one": "موظف واحد",
+    "employeesCount_two": "موظفان",
+    "employeesCount_few": "{{count}} موظفين",
+    "employeesCount_many": "{{count}} موظفًا",
+    "employeesCount_other": "{{count}} موظف",
+    "empty": "لا توجد أقسام بعد",
+    "emptyHint": "أضف أول قسم أدناه."
+  },
+  "detail": {
+    "directReports": "المرؤوسون المباشرون",
+    "directReportsCount_zero": "لا يوجد موظفون يتبعون هذا الموظف إداريًا",
+    "directReportsCount_one": "موظف واحد يتبع هذا الموظف إداريًا",
+    "directReportsCount_two": "موظفان يتبعان هذا الموظف إداريًا",
+    "directReportsCount_few": "{{count}} موظفين يتبعون هذا الموظف إداريًا",
+    "directReportsCount_many": "{{count}} موظفًا يتبعون هذا الموظف إداريًا",
+    "directReportsCount_other": "{{count}} موظف يتبع هذا الموظف إداريًا",
+    "noReports": "لا يوجد مرؤوسون مباشرون",
+    "noReportsHint": "سيظهر هنا الموظفون الذين يتبعون هذا الموظف إداريًا."
+  }
+}

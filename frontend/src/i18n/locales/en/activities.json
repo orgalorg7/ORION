@@ -1,0 +1,29 @@
+{
+  "title": "Activities & Tasks",
+  "subtitle_one": "{{count}} activity or task in your workspace",
+  "subtitle_other": "{{count}} activities and tasks in your workspace",
+  "tabs": {
+    "upcoming": "Upcoming",
+    "overdue": "Overdue",
+    "completed": "Completed"
+  },
+  "filters": {
+    "allTypes": "All types",
+    "allMembers": "All members"
+  },
+  "fields": {
+    "type": "Type",
+    "title": "Title",
+    "related": "Related to"
+  },
+  "relatedTypes": {
+    "contact": "Contact",
+    "company": "Company",
+    "deal": "Deal",
+    "lead": "Lead"
+  },
+  "form": {
+    "createTitle": "New activity",
+    "editTitle": "Edit activity"
+  }
+}

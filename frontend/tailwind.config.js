@@ -1,0 +1,51 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  darkMode: 'class',
+  content: ['./index.html', './src/**/*.{ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        canvas: '#f3efe7',
+        surface: '#fbfaf6',
+        'surface-raised': '#fffdf8',
+        'surface-muted': '#eee8dd',
+        line: '#ded4c3',
+        'line-strong': '#c7b9a5',
+        ink: '#211f1b',
+        muted: '#71695f',
+        primary: {
+          50: '#fdf9e9',
+          100: '#f9efc4',
+          200: '#f1de87',
+          300: '#e6c650',
+          400: '#d5a928',
+          500: '#bf8e18',
+          600: '#9c6e12',
+          700: '#7b5312',
+          800: '#664315',
+          900: '#573817',
+          950: '#321d09',
+        },
+        gray: {
+          50: '#f7f4ed',
+          100: '#eee8dd',
+          200: '#ded4c3',
+          300: '#c7b9a5',
+          400: '#9b968c',
+          500: '#736f68',
+          600: '#57534e',
+          700: '#3f3d39',
+          800: '#292826',
+          900: '#191918',
+          950: '#090909',
+        },
+      },
+      fontFamily: {
+        sans: ['Manrope', 'IBM Plex Sans Arabic', 'system-ui', 'sans-serif'],
+        display: ['Manrope', 'IBM Plex Sans Arabic', 'system-ui', 'sans-serif'],
+        mono: ['IBM Plex Mono', 'ui-monospace', 'monospace'],
+      },
+    },
+  },
+  plugins: [],
+};

@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<title>Korzah CRM — إعلان</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+Arabic:wght@500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; }
+  body {
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    background: #090909;
+    color: #fff;
+    position: relative;
+  }
+  .latin { font-family: 'Manrope', sans-serif; direction: ltr; unicode-bidi: isolate; }
+  .mono { font-family: 'IBM Plex Mono', monospace; direction: ltr; }
+
+  /* ------- ambient ground: static, no motion ------- */
+  .vignette { position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0,0,0,0.55)); }
+
+  /* ------- persistent chrome ------- */
+  .chrome-brand {
+    position: absolute; top: 44px; inset-inline-start: 56px; z-index: 40;
+    display: flex; align-items: center; gap: 16px; opacity: 0.92;
+  }
+  .chrome-brand .word { font-weight: 800; font-size: 27px; letter-spacing: -0.01em; }
+  .chrome-brand .word .latin { font-family: 'Manrope', sans-serif; letter-spacing: 0.1em; }
+  .progress-wrap {
+    position: absolute; bottom: 46px; left: 50%; transform: translateX(-50%);
+    width: 620px; height: 8px; border-radius: 6px; z-index: 40;
+    background: rgba(255,255,255,0.14); overflow: hidden;
+  }
+  .progress-fill {
+    display: block; height: 100%; width: 100%; background: #d5a928; border-radius: 6px;
+    transform: translateX(var(--px, 100%)); transition: none;
+    animation: progress 49.4s linear forwards paused;
+  }
+  html[dir='rtl'] .progress-fill { animation-name: progressRtl; }
+  @keyframes progressRtl { from { transform: translateX(100%); } to { transform: translateX(0%); } }
+
+  /* ------- logo (div-based, animatable) ------- */
+  .hl-mark {
+    position: relative; direction: ltr;
+    background: url('../assets/korzah-app-icon.png') center / contain no-repeat;
+  }
+  .hl-mark .stem, .hl-mark .track { display: none; }
+  .hl-mark .stem { position: absolute; top: 22%; width: 12%; height: 56%; background: #fff; border-radius: 2px; }
+  .hl-mark .stem.s1 { left: 24%; }
+  .hl-mark .stem.s2 { right: 24%; }
+  .hl-mark .track {
+    position: absolute; left: 36%; top: 44%; width: 28%; height: 12%;
+    background: rgba(255,255,255,0.18); border-radius: 2px; overflow: hidden;
+  }
+  .hl-mark .fill { display: block; height: 100%; width: 62%; background: #d5a928; }
+
+  /* ------- scenes ------- */
+  .scene {
+    position: absolute; inset: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.65s ease;
+  }
+  .scene.on { opacity: 1; visibility: visible; }
+  .rise { opacity: 0; transform: translateY(34px); transition: opacity 0.75s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.75s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .scene.on .rise { opacity: 1; transform: none; }
+  .d1 { transition-delay: 0.15s; } .d2 { transition-delay: 0.32s; } .d3 { transition-delay: 0.5s; }
+  .d4 { transition-delay: 0.68s; } .d5 { transition-delay: 0.86s; } .d6 { transition-delay: 1.05s; }
+
+  /* intro */
+  #intro { flex-direction: column; gap: 44px; }
+  #intro .hl-mark { width: 250px; height: 250px; }
+  #intro .hl-mark { opacity: 0; transform: scale(0.9); transition: opacity 0.8s ease 0.15s, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s; }
+  #intro.on .hl-mark { opacity: 1; transform: scale(1); }
+  #intro .fill { width: 0; transition: width 1.3s cubic-bezier(0.3, 0, 0.2, 1) 0.85s; }
+  #intro.on .fill { width: 62%; }
+  #intro .word { font-size: 76px; font-weight: 800; }
+  #intro .word .latin { font-family: 'Manrope', sans-serif; letter-spacing: 0.12em; }
+  #intro .prod { font-size: 46px; font-weight: 800; color: #d5a928; }
+  #intro .tag { font-size: 33px; color: rgba(255,255,255,0.72); font-weight: 600; }
+
+  /* statement */
+  #statement { flex-direction: column; gap: 20px; text-align: center; }
+  #statement .big { font-size: 100px; font-weight: 900; line-height: 1.5; }
+  #statement .accent { color: #d5a928; }
+  #statement .small { font-size: 34px; color: rgba(255,255,255,0.66); font-weight: 600; margin-top: 8px; }
+
+  /* feature scenes */
+  .feature { padding: 0 110px; gap: 80px; justify-content: space-between; }
+  .feature .copy { width: 620px; flex-shrink: 0; display: flex; flex-direction: column; gap: 26px; }
+  .feature .kicker { color: #d5a928; font-weight: 800; font-size: 27px; letter-spacing: 0.02em; }
+  .feature h2 { font-size: 62px; font-weight: 900; line-height: 1.35; }
+  .feature .chips { display: flex; flex-direction: column; gap: 16px; margin-top: 8px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 14px; align-self: flex-start;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 999px; padding: 12px 26px; font-size: 27px; font-weight: 700;
+    color: rgba(255,255,255,0.92);
+  }
+  .chip svg { width: 26px; height: 26px; stroke: #d5a928; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .shot {
+    width: 1010px; flex-shrink: 0; border-radius: 22px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 40px 90px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.4);
+    transform: perspective(1600px) rotateY(6deg) rotateX(1deg);
+    background: #191918;
+  }
+  html[dir='rtl'] .shot { transform: perspective(1600px) rotateY(-6deg) rotateX(1deg); }
+  .shot .inner { overflow: hidden; }
+  .shot img { display: block; width: 100%; transform: scale(1.04); }
+  .scene.on .shot img { animation: kenburns 5s linear forwards; }
+  @keyframes kenburns {
+    from { transform: scale(1.04) translateY(0); }
+    to { transform: scale(1.14) translateY(-3.5%); }
+  }
+
+  /* platform scene */
+  #platform { flex-direction: column; gap: 40px; }
+  #platform h2 { font-size: 66px; font-weight: 900; text-align: center; }
+  #platform .duo { display: flex; gap: 40px; }
+  #platform .shot { width: 720px; }
+  #platform .shot.light-shot { transform: perspective(1600px) rotateY(6deg) rotateX(1deg); }
+  #platform .chip-row { display: flex; gap: 18px; }
+
+  /* cta */
+  #cta { flex-direction: column; gap: 36px; text-align: center; }
+  #cta .hl-mark { width: 150px; height: 150px; }
+  #cta h2 { font-size: 88px; font-weight: 900; line-height: 1.4; }
+  #cta .sub { font-size: 36px; color: rgba(255,255,255,0.7); font-weight: 600; }
+  #cta .pill {
+    background: #fff; color: #0a0a0c; font-weight: 800; font-size: 40px;
+    padding: 20px 70px; border-radius: 999px; margin-top: 10px;
+  }
+  #cta .site { font-size: 30px; color: rgba(255,255,255,0.6); }
+</style>
+</head>
+<body>
+  <div class="vignette"></div>
+
+  <div class="chrome-brand">
+    <div class="hl-mark" style="width:54px;height:54px;">
+      <div class="stem s1"></div><div class="stem s2"></div>
+      <div class="track"><span class="fill"></span></div>
+    </div>
+    <div class="word"><span class="latin">KORZAH</span></div>
+  </div>
+  <div class="progress-wrap"><span class="progress-fill" id="progressFill"></span></div>
+
+  <!-- 1. intro -->
+  <section class="scene" id="intro">
+    <div class="hl-mark">
+      <div class="stem s1"></div><div class="stem s2"></div>
+      <div class="track"><span class="fill"></span></div>
+    </div>
+    <div class="word rise d3"><span class="latin">KORZAH</span></div>
+    <div class="prod rise d4"><span class="latin">KORZAH CRM</span></div>
+    <div class="tag rise d5">نظام متكامل لإدارة علاقات العملاء — بالعربية</div>
+  </section>
+
+  <!-- 2. statement -->
+  <section class="scene" id="statement">
+    <div class="big rise">عملاؤك. صفقاتك. فريقك.</div>
+    <div class="big accent rise d2">في مكان واحد.</div>
+    <div class="small rise d4">منصّة سحابية آمنة لكل مؤسسة — من التسجيل حتى الإغلاق</div>
+  </section>
+
+  <!-- 3..9 features -->
+  <section class="scene feature" id="f-dash">
+    <div class="copy">
+      <div class="kicker rise">لوحة التحكم</div>
+      <h2 class="rise d1">قراراتك مبنية<br/>على أرقام حيّة</h2>
+      <div class="chips">
+        <span class="chip rise d2"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>مؤشرات أداء فورية</span>
+        <span class="chip rise d3"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>الإيرادات الشهرية</span>
+        <span class="chip rise d4"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>توزيع مسار المبيعات</span>
+      </div>
+    </div>
+    <div class="shot rise d1"><div class="inner"><img src="../assets/dashboard-ar-dark.png" alt=""/></div></div>
+  </section>
+
+  <section class="scene feature" id="f-leads">
+    <div class="copy">
+      <div class="kicker rise">العملاء المحتملون</div>
+      <h2 class="rise d1">لا تفقد فرصة<br/>بعد اليوم</h2>
+      <div class="chips">
+        <span class="chip rise d2"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>تقييم بدرجة من ١٠٠</span>
+        <span class="chip rise d3"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>مصادر وحالات واضحة</span>
+        <span class="chip rise d4"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>تحويل بنقرة واحدة إلى صفقة</span>
+      </div>
+    </div>
+    <div class="shot rise d1"><div class="inner"><img src="../assets/leads-ar-dark.png" alt=""/></div></div>
+  </section>
+
+  <section class="scene feature" id="f-deals">
+    <div class="copy">
+      <div class="kicker rise">الصفقات</div>
+      <h2 class="rise d1">مسار مبيعات مرئي<br/>بالسحب والإفلات</h2>
+      <div class="chips">
+        <span class="chip rise d2"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>لوحة كانبان تفاعلية</span>
+        <span class="chip rise d3"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>مراحل قابلة للتخصيص</span>
+        <span class="chip rise d4"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>إجمالي قيمة كل مرحلة</span>
+      </div>
+    </div>
+    <div class="shot rise d1"><div class="inner"><img src="../assets/deals-ar-dark.png" alt=""/></div></div>
+  </section>
+
+  <section class="scene feature" id="f-contacts">
+    <div class="copy">
+      <div class="kicker rise">جهات الاتصال والشركات</div>
+      <h2 class="rise d1">اعرف عميلك<br/>بكل التفاصيل</h2>
+      <div class="chips">
+        <span class="chip rise d2"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>سجل كامل لكل عميل</span>
+        <span class="chip rise d3"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>وسوم ملوّنة للتصنيف</span>
+        <span class="chip rise d4"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>خط زمني للأنشطة والملاحظات</span>
+      </div>
+    </div>
+    <div class="shot rise d1"><div class="inner"><img src="../assets/contacts-ar-dark.png" alt=""/></div></div>
+  </section>
+
+  <section class="scene feature" id="f-activities">
+    <div class="copy">
+      <div class="kicker rise">الأنشطة والمهام</div>
+      <h2 class="rise d1">فريقك يعرف دائمًا<br/>ما الخطوة التالية</h2>
+      <div class="chips">
+        <span class="chip rise d2"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>مكالمات واجتماعات ومهام</span>
+        <span class="chip rise d3"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>القادمة والمتأخرة والمكتملة</span>
+        <span class="chip rise d4"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>إسناد لأعضاء الفريق</span>
+      </div>
+    </div>
+    <div class="shot rise d1"><div class="inner"><img src="../assets/activities-ar-dark.png" alt=""/></div></div>
+  </section>
+
+  <section class="scene feature" id="f-tickets">
+    <div class="copy">
+      <div class="kicker rise">تذاكر الدعم</div>
+      <h2 class="rise d1">خدمة عملاء<br/>تليق باسمك</h2>
+      <div class="chips">
+        <span class="chip rise d2"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>أولويات وتصنيفات</span>
+        <span class="chip rise d3"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>محادثات وملاحظات داخلية</span>
+        <span class="chip rise d4"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>ترقيم تلقائي للتذاكر</span>
+      </div>
+    </div>
+    <div class="shot rise d1"><div class="inner"><img src="../assets/tickets-ar-dark.png" alt=""/></div></div>
+  </section>
+
+  <section class="scene feature" id="f-employees">
+    <div class="copy">
+      <div class="kicker rise">الموظفون</div>
+      <h2 class="rise d1">أدر فريقك<br/>من نفس المكان</h2>
+      <div class="chips">
+        <span class="chip rise d2"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>أقسام وتسلسل إداري</span>
+        <span class="chip rise d3"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>رواتب وتواريخ تعيين</span>
+        <span class="chip rise d4"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>حالات التوظيف والإجازات</span>
+      </div>
+    </div>
+    <div class="shot rise d1"><div class="inner"><img src="../assets/employees-ar-dark.png" alt=""/></div></div>
+  </section>
+
+  <!-- 10. platform -->
+  <section class="scene" id="platform">
+    <h2 class="rise">جاهز لمؤسستك — بالعربية والإنجليزية</h2>
+    <div class="duo">
+      <div class="shot rise d1"><div class="inner"><img src="../assets/dashboard-ar-light.png" alt=""/></div></div>
+      <div class="shot light-shot rise d2"><div class="inner"><img src="../assets/dashboard-ar-dark.png" alt=""/></div></div>
+    </div>
+    <div class="chip-row">
+      <span class="chip rise d3"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>وضع داكن وفاتح</span>
+      <span class="chip rise d4"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>عزل تام لبيانات كل مؤسسة</span>
+      <span class="chip rise d5"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>أدوار وصلاحيات</span>
+      <span class="chip rise d6"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>باقات تنمو معك</span>
+    </div>
+  </section>
+
+  <!-- 11. cta -->
+  <section class="scene" id="cta">
+    <div class="hl-mark rise">
+      <div class="stem s1"></div><div class="stem s2"></div>
+      <div class="track"><span class="fill"></span></div>
+    </div>
+    <h2 class="rise d1">ابدأ تجربتك المجانية اليوم</h2>
+    <div class="sub rise d2">١٤ يومًا بجميع المزايا — دون بطاقة ائتمان</div>
+    <div class="pill rise d3">جرّب <span class="latin">KORZAH CRM</span> مجانًا</div>
+    <div class="site mono rise d4">korzah.com</div>
+  </section>
+
+<script>
+  const SCENES = [
+    ['intro', 4600],
+    ['statement', 4000],
+    ['f-dash', 4500],
+    ['f-leads', 4500],
+    ['f-deals', 4500],
+    ['f-contacts', 4300],
+    ['f-activities', 4300],
+    ['f-tickets', 4300],
+    ['f-employees', 4300],
+    ['platform', 4600],
+    ['cta', 5500],
+  ];
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  async function run() {
+    await document.fonts.ready;
+    await Promise.all([...document.images].map((img) => img.decode().catch(() => null)));
+    await sleep(500);
+    document.getElementById('progressFill').style.animationPlayState = 'running';
+    let previous = null;
+    for (const [id, duration] of SCENES) {
+      const el = document.getElementById(id);
+      el.classList.add('on');
+      if (previous) previous.classList.remove('on');
+      previous = el;
+      await sleep(duration);
+    }
+    document.title = 'DONE';
+  }
+  run();
+</script>
+</body>
+</html>

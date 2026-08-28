@@ -1,0 +1,144 @@
+{
+  "nav": {
+    "profile": "Profile",
+    "organization": "Organization",
+    "team": "Team",
+    "pipelines": "Pipelines",
+    "tags": "Tags",
+    "billing": "Billing"
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Your personal information and preferences.",
+    "appearance": {
+      "title": "Appearance",
+      "subtitle": "Choose how the interface looks for you."
+    },
+    "password": {
+      "title": "Password",
+      "subtitle": "Use a strong password that you do not use anywhere else.",
+      "current": "Current password",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "mismatch": "The passwords do not match",
+      "submit": "Update password",
+      "changed": "Password updated successfully"
+    }
+  },
+  "organization": {
+    "title": "Organization",
+    "subtitle": "Your workspace details and defaults.",
+    "fields": {
+      "industry": "Industry",
+      "size": "Company size",
+      "website": "Website",
+      "currency": "Currency",
+      "defaultLanguage": "Default language"
+    },
+    "sizes": {
+      "1-10": "1–10 employees",
+      "11-50": "11–50 employees",
+      "51-200": "51–200 employees",
+      "201-1000": "201–1,000 employees",
+      "1000+": "More than 1,000 employees"
+    }
+  },
+  "team": {
+    "members": {
+      "title": "Members",
+      "subtitle": "People with access to this workspace."
+    },
+    "invitations": {
+      "title": "Invitations",
+      "subtitle": "Pending invitations to join this workspace.",
+      "empty": "No pending invitations",
+      "invitedOn": "Invited {{date}}",
+      "revoke": "Revoke invitation",
+      "revokeTitle": "Revoke this invitation?"
+    },
+    "invite": "Invite member",
+    "inviteTitle": "Invite a member",
+    "you": "You",
+    "deactivate": "Deactivate",
+    "reactivate": "Reactivate",
+    "deactivateTitle": "Deactivate {{name}}?",
+    "deactivateMessage": "They will lose access to this workspace until they are reactivated.",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "toast": {
+      "memberAdded": "Member added to the workspace",
+      "invitationSent": "Invitation sent"
+    }
+  },
+  "pipelines": {
+    "title": "Pipelines",
+    "subtitle": "Manage your sales pipelines and their stages.",
+    "newPipeline": "New pipeline",
+    "defaultName": "New pipeline",
+    "pipelineName": "Pipeline name",
+    "default": "Default",
+    "makeDefault": "Make default",
+    "deleteMessage": "All stages in this pipeline will be removed. This action cannot be undone.",
+    "stageName": "Stage name",
+    "stageColor": "Stage color",
+    "probability": "Probability",
+    "addStage": "Add stage",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "noStages": "No stages in this pipeline yet.",
+    "empty": "No pipelines yet",
+    "emptyHint": "Create your first pipeline to start tracking deals."
+  },
+  "tags": {
+    "title": "Tags",
+    "subtitle": "Labels you can attach to contacts, companies and deals.",
+    "tagName": "Tag name",
+    "tagColor": "Tag color",
+    "empty": "No tags yet",
+    "emptyHint": "Create your first tag to organize your records."
+  },
+  "billing": {
+    "subscription": "Subscription",
+    "demoNote": "Billing is a demo — plan changes are applied instantly and no real charges are made.",
+    "currentPeriodEnd": "Current period ends on {{date}}",
+    "trialEndsOn": "Trial ends on {{date}}",
+    "status": {
+      "trialing": "Trial",
+      "active": "Active",
+      "past_due": "Past due",
+      "canceled": "Canceled"
+    },
+    "plans": "Plans",
+    "plansSubtitle": "Pick the plan that fits your team.",
+    "perMonth": "/mo",
+    "maxUsers_one": "Up to {{value}} user",
+    "maxUsers_other": "Up to {{value}} users",
+    "maxContacts_one": "Up to {{value}} contact",
+    "maxContacts_other": "Up to {{value}} contacts",
+    "currentPlan": "Current plan",
+    "choosePlan": "Choose plan",
+    "changeTitle": "Switch to the {{plan}} plan?",
+    "changeMessage": "Your subscription will be updated immediately. This is a demo — you will not be charged.",
+    "planChanged": "Plan updated successfully",
+    "features": {
+      "contacts": "Contact management",
+      "companies": "Company records",
+      "leads": "Lead capture & scoring",
+      "deals": "Deal pipelines",
+      "activities": "Activities & reminders",
+      "tickets": "Support tickets",
+      "employees": "Employee directory",
+      "reports": "Reports & dashboards",
+      "api": "API access",
+      "integrations": "Integrations",
+      "email": "Email campaigns",
+      "support": "Standard support",
+      "priority_support": "Priority support",
+      "custom_fields": "Custom fields",
+      "audit_log": "Audit log",
+      "unlimited_pipelines": "Unlimited pipelines"
+    }
+  }
+}

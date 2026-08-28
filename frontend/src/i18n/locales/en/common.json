@@ -1,0 +1,161 @@
+{
+  "appName": "Korzah CRM",
+  "brand": {
+    "tagline": "Built for lasting relationships.",
+    "eyebrow": "Property relationships, structured",
+    "statement": "One clear operating system for every lead, deal, client, and property conversation."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "leads": "Leads",
+    "contacts": "Contacts",
+    "companies": "Companies",
+    "deals": "Deals",
+    "activities": "Activities",
+    "tickets": "Tickets",
+    "employees": "Employees",
+    "settings": "Settings",
+    "crm": "CRM",
+    "workspace": "Workspace"
+  },
+  "actions": {
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "add": "Add",
+    "search": "Search…",
+    "filter": "Filter",
+    "clear": "Clear",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "view": "View",
+    "retry": "Retry",
+    "logout": "Log out",
+    "export": "Export",
+    "import": "Import",
+    "more": "More"
+  },
+  "labels": {
+    "name": "Name",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "phone": "Phone",
+    "status": "Status",
+    "owner": "Owner",
+    "assignedTo": "Assigned to",
+    "source": "Source",
+    "tags": "Tags",
+    "address": "Address",
+    "city": "City",
+    "country": "Country",
+    "createdAt": "Created",
+    "updatedAt": "Updated",
+    "description": "Description",
+    "actions": "Actions",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "optional": "Optional",
+    "language": "Language",
+    "theme": "Theme",
+    "role": "Role",
+    "notSet": "Not set",
+    "details": "Details",
+    "overview": "Overview",
+    "total": "Total"
+  },
+  "sources": {
+    "website": "Website",
+    "referral": "Referral",
+    "social": "Social media",
+    "email_campaign": "Email campaign",
+    "event": "Event",
+    "cold_call": "Cold call",
+    "other": "Other"
+  },
+  "roles": {
+    "owner": "Owner",
+    "admin": "Admin",
+    "manager": "Manager",
+    "member": "Member"
+  },
+  "pagination": {
+    "showing": "Showing {{from}}–{{to}} of {{formattedCount}}",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "state": {
+    "loading": "Loading…",
+    "empty": "Nothing here yet",
+    "emptyHint": "Get started by creating your first record.",
+    "error": "Something went wrong",
+    "notFound": "Not found",
+    "noResults": "No results match your search"
+  },
+  "confirmDelete": {
+    "title": "Delete {{item}}?",
+    "message": "This action cannot be undone."
+  },
+  "toast": {
+    "saved": "Saved successfully",
+    "created": "Created successfully",
+    "deleted": "Deleted successfully",
+    "error": "Something went wrong"
+  },
+  "errors": {
+    "requestFailed": "We couldn't complete the request. Please try again.",
+    "network": "Cannot reach the server. Check your connection and try again.",
+    "unauthorized": "Your session has expired. Sign in again.",
+    "required": "This field is required.",
+    "invalidEmail": "Enter a valid email address.",
+    "invalidPhone": "Enter a valid phone number.",
+    "emailExists": "An account already exists for this email address.",
+    "invalidCredentials": "The email or password is incorrect.",
+    "permissionDenied": "You don't have permission to perform this action.",
+    "notFound": "The requested record could not be found.",
+    "alreadyExists": "This record already exists.",
+    "invalidSelection": "Select a valid option.",
+    "passwordTooShort": "The password is too short.",
+    "positiveValue": "The value must be greater than zero.",
+    "endAfterStart": "The end date must be after the start date."
+  },
+  "accessibility": {
+    "mainContent": "Main content",
+    "openNavigation": "Open navigation",
+    "closeNavigation": "Close navigation",
+    "userMenu": "Open user menu",
+    "backToList": "Back to list",
+    "dismissNotification": "Dismiss notification"
+  },
+  "theme": {
+    "light": "Light mode",
+    "dark": "Dark mode"
+  },
+  "notes": {
+    "title": "Notes",
+    "placeholder": "Write a note…",
+    "add": "Add note",
+    "empty": "No notes yet",
+    "deleteNote": "Delete note"
+  },
+  "activitiesPanel": {
+    "title": "Activities",
+    "add": "Add activity",
+    "empty": "No activities yet",
+    "titlePlaceholder": "What needs to be done?",
+    "dueAt": "Due date",
+    "completed": "Completed",
+    "types": {
+      "call": "Call",
+      "email": "Email",
+      "meeting": "Meeting",
+      "task": "Task"
+    }
+  }
+}

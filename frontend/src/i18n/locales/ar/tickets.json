@@ -1,0 +1,54 @@
+{
+  "title": "تذاكر الدعم",
+  "subtitle_zero": "لا توجد تذاكر في مساحة عملك",
+  "subtitle_one": "تذكرة واحدة في مساحة عملك",
+  "subtitle_two": "تذكرتان في مساحة عملك",
+  "subtitle_few": "{{count}} تذاكر في مساحة عملك",
+  "subtitle_many": "{{count}} تذكرة في مساحة عملك",
+  "subtitle_other": "{{count}} تذكرة في مساحة عملك",
+  "addTicket": "تذكرة جديدة",
+  "fields": {
+    "number": "الرقم",
+    "subject": "الموضوع",
+    "contact": "جهة الاتصال",
+    "priority": "الأولوية",
+    "category": "الفئة",
+    "comments": "التعليقات",
+    "unassigned": "غير مُسندة"
+  },
+  "statuses": {
+    "open": "مفتوحة",
+    "in_progress": "قيد المعالجة",
+    "resolved": "تم حلها",
+    "closed": "مغلقة"
+  },
+  "priorities": {
+    "low": "منخفضة",
+    "medium": "متوسطة",
+    "high": "مرتفعة",
+    "urgent": "عاجلة"
+  },
+  "categories": {
+    "general": "عام",
+    "billing": "الفوترة",
+    "technical": "تقني",
+    "feature_request": "طلب ميزة"
+  },
+  "filters": {
+    "allStatuses": "كل الحالات",
+    "allPriorities": "كل الأولويات"
+  },
+  "form": {
+    "createTitle": "تذكرة جديدة",
+    "editTitle": "تعديل التذكرة"
+  },
+  "conversation": {
+    "title": "المحادثة",
+    "empty": "لا توجد تعليقات بعد",
+    "emptyHint": "ابدأ المحادثة بإضافة أول تعليق.",
+    "placeholder": "اكتب ردًا…",
+    "internal": "داخلي",
+    "internalNote": "ملاحظة داخلية",
+    "send": "إرسال"
+  }
+}

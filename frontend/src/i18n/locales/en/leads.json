@@ -1,0 +1,40 @@
+{
+  "title": "Leads",
+  "subtitle_one": "{{count}} lead in your workspace",
+  "subtitle_other": "{{count}} leads in your workspace",
+  "addLead": "Add lead",
+  "fields": {
+    "companyName": "Company",
+    "jobTitle": "Job title",
+    "score": "Score",
+    "estimatedValue": "Estimated value"
+  },
+  "statuses": {
+    "new": "New",
+    "contacted": "Contacted",
+    "qualified": "Qualified",
+    "unqualified": "Unqualified",
+    "converted": "Converted"
+  },
+  "form": {
+    "createTitle": "New lead",
+    "editTitle": "Edit lead"
+  },
+  "convert": {
+    "action": "Convert",
+    "title": "Convert lead",
+    "explanation": "Converting this lead will create a contact from its details and mark the lead as converted. This action cannot be undone.",
+    "createDeal": "Also create a deal",
+    "dealTitle": "Deal title",
+    "dealValue": "Deal value",
+    "pipeline": "Pipeline",
+    "stage": "Stage",
+    "submit": "Convert lead",
+    "success": "Lead converted successfully"
+  },
+  "converted": {
+    "banner": "This lead was converted on {{date}}.",
+    "viewContact": "View contact",
+    "viewDeal": "View deal"
+  }
+}

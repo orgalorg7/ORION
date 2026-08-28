@@ -1,0 +1,51 @@
+{
+  "title": "Employees",
+  "subtitle_one": "{{count}} employee in your workspace",
+  "subtitle_other": "{{count}} employees in your workspace",
+  "addEmployee": "Add employee",
+  "departments": "Departments",
+  "allDepartments": "All departments",
+  "allTypes": "All types",
+  "fields": {
+    "jobTitle": "Job title",
+    "department": "Department",
+    "employmentType": "Employment type",
+    "hireDate": "Hire date",
+    "salary": "Salary",
+    "manager": "Manager",
+    "linkedAccount": "Linked account",
+    "linkedAccountHint": "Connects this employee to a workspace login."
+  },
+  "statuses": {
+    "active": "Active",
+    "on_leave": "On leave",
+    "terminated": "Terminated"
+  },
+  "types": {
+    "full_time": "Full-time",
+    "part_time": "Part-time",
+    "contract": "Contract",
+    "intern": "Intern"
+  },
+  "form": {
+    "createTitle": "New employee",
+    "editTitle": "Edit employee"
+  },
+  "departmentsModal": {
+    "title": "Departments",
+    "namePlaceholder": "Department name",
+    "saveName": "Save name",
+    "deleteDepartment": "Delete department",
+    "employeesCount_one": "{{count}} employee",
+    "employeesCount_other": "{{count}} employees",
+    "empty": "No departments yet",
+    "emptyHint": "Add your first department below."
+  },
+  "detail": {
+    "directReports": "Direct reports",
+    "directReportsCount_one": "{{count}} employee reports to this person",
+    "directReportsCount_other": "{{count}} employees report to this person",
+    "noReports": "No direct reports",
+    "noReportsHint": "Employees who report to this person will appear here."
+  }
+}

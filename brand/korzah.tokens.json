@@ -1,0 +1,37 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "brand": {
+    "color": {
+      "obsidian": { "$type": "color", "$value": "#090909" },
+      "graphite": { "$type": "color", "$value": "#191918" },
+      "gold": { "$type": "color", "$value": "#D5A928" },
+      "goldDeep": { "$type": "color", "$value": "#9C6E12" },
+      "ivory": { "$type": "color", "$value": "#F8F7F4" },
+      "concrete": { "$type": "color", "$value": "#DEDAD1" },
+      "stone": { "$type": "color", "$value": "#736F68" },
+      "light": {
+        "canvas": { "$type": "color", "$value": "#F3EFE7" },
+        "surface": { "$type": "color", "$value": "#FBFAF6" },
+        "surfaceRaised": { "$type": "color", "$value": "#FFFDF8" },
+        "surfaceMuted": { "$type": "color", "$value": "#EEE8DD" },
+        "line": { "$type": "color", "$value": "#DED4C3" },
+        "lineStrong": { "$type": "color", "$value": "#C7B9A5" },
+        "ink": { "$type": "color", "$value": "#211F1B" },
+        "textMuted": { "$type": "color", "$value": "#71695F" }
+      }
+    },
+    "font": {
+      "latin": { "$type": "fontFamily", "$value": ["Manrope", "sans-serif"] },
+      "arabic": { "$type": "fontFamily", "$value": ["IBM Plex Sans Arabic", "sans-serif"] },
+      "technical": { "$type": "fontFamily", "$value": ["IBM Plex Mono", "monospace"] }
+    },
+    "radius": {
+      "control": { "$type": "dimension", "$value": { "value": 8, "unit": "px" } },
+      "container": { "$type": "dimension", "$value": { "value": 12, "unit": "px" } }
+    },
+    "motion": {
+      "quick": { "$type": "duration", "$value": { "value": 160, "unit": "ms" } },
+      "standard": { "$type": "duration", "$value": { "value": 220, "unit": "ms" } }
+    }
+  }
+}
