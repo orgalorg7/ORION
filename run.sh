@@ -58,7 +58,7 @@ echo "Applying database migrations..."
 echo "Ensuring demo login data exists..."
 (cd "$BACKEND_DIR" && "$VENV_DIR/bin/python" manage.py seed_demo)
 
-echo "Starting Korzah CRM..."
+echo "Starting ORION CRM..."
 echo "Frontend: Vite will print its URL below (normally http://localhost:5173)"
 echo "Backend:  http://localhost:8000"
 echo ""
