@@ -14,6 +14,7 @@ class TenantViewSet(viewsets.ModelViewSet):
     """
 
     permission_classes = [IsAuthenticated, IsOrgMember]
+    lookup_value_regex = r'\d+'
 
     @property
     def org(self):
@@ -23,4 +24,7 @@ class TenantViewSet(viewsets.ModelViewSet):
         return super().get_queryset().filter(organization=self.org)
 
     def perform_create(self, serializer):
-        serializer.save(organization=self.org, created_by=self.request.user)
+        serializer.save(organization=self.org, created_by=self.request.user, updated_by=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(updated_by=self.request.user)

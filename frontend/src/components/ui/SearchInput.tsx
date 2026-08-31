@@ -11,13 +11,15 @@ export function SearchInput({
   onSearch,
   placeholder,
   className,
+  initialValue = '',
 }: {
   onSearch: (term: string) => void;
   placeholder?: string;
   className?: string;
+  initialValue?: string;
 }) {
   const { t } = useTranslation('common');
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(initialValue);
   const debounced = useDebounce(value, 300);
 
   useEffect(() => {

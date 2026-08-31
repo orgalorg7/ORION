@@ -1,100 +1,99 @@
+import django_filters
 from django.db import transaction
-from django.utils import timezone
-from rest_framework import status
+from django.db.models import Q
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from apps.contacts.models import Company, Contact
 from apps.core.viewsets import TenantViewSet
-from apps.deals.models import Deal, Pipeline
+from apps.activities.projections import annotate_activity_summary
+from apps.customer_core.conversion import convert_lead
+from apps.customer_core.mixins import CustomerRecordViewSetMixin
+from apps.customer_core.scoring import LeadScoringService
 
 from .models import Lead
 from .serializers import LeadConvertSerializer, LeadSerializer
 
 
-class LeadViewSet(TenantViewSet):
+class LeadFilterSet(django_filters.FilterSet):
+    score_min = django_filters.NumberFilter(field_name='score', lookup_expr='gte')
+    score_max = django_filters.NumberFilter(field_name='score', lookup_expr='lte')
+    estimated_value_min = django_filters.NumberFilter(field_name='estimated_value', lookup_expr='gte')
+    estimated_value_max = django_filters.NumberFilter(field_name='estimated_value', lookup_expr='lte')
+    created_from = django_filters.IsoDateTimeFilter(field_name='created_at', lookup_expr='gte')
+    created_to = django_filters.IsoDateTimeFilter(field_name='created_at', lookup_expr='lte')
+    tags = django_filters.BaseInFilter(field_name='tags__id', lookup_expr='in')
+    tags_all = django_filters.CharFilter(method='filter_tags_all')
+    unassigned = django_filters.BooleanFilter(method='filter_unassigned')
+
+    class Meta:
+        model = Lead
+        fields = [
+            'owner', 'team', 'source', 'source_record', 'status', 'lifecycle_stage', 'company',
+            'country', 'city', 'temperature',
+        ]
+
+    def filter_unassigned(self, queryset, name, value):
+        return queryset.filter(owner__isnull=True) if value else queryset
+
+    def filter_tags_all(self, queryset, name, value):
+        for tag_id in filter(None, value.split(',')):
+            queryset = queryset.filter(tags__id=tag_id)
+        return queryset
+
+
+class LeadViewSet(CustomerRecordViewSetMixin, TenantViewSet):
     queryset = Lead.objects.all()
     serializer_class = LeadSerializer
-    filterset_fields = ['status', 'source', 'owner']
-    search_fields = ['first_name', 'last_name', 'email', 'phone', 'company_name']
-    ordering_fields = ['created_at', 'score', 'estimated_value']
+    custom_target = 'lead'
+    event_prefix = 'lead'
+    filterset_class = LeadFilterSet
+    search_fields = [
+        'first_name', 'last_name', 'display_name', 'normalized_name', 'email', 'normalized_email',
+        'phone', 'normalized_phone', 'company_name', 'company__name', 'company__normalized_name',
+    ]
+    ordering_fields = [
+        'display_name', 'created_at', 'updated_at', 'score', 'estimated_value', 'company_name', 'owner',
+    ]
+    ordering = ['-created_at', '-id']
 
     def get_queryset(self):
-        return super().get_queryset().select_related('owner')
+        queryset = (
+            super()
+            .get_queryset()
+            .select_related('owner', 'team', 'company', 'source_record')
+            .prefetch_related('tags')
+            .distinct()
+        )
+        return annotate_activity_summary(queryset, 'lead')
+
+    def _apply_score(self, lead):
+        result = LeadScoringService.calculate(lead)
+        if lead.score != result['score'] or lead.score_breakdown != result['reasons']:
+            lead.score = result['score']
+            lead.score_breakdown = result['reasons']
+            lead.save(update_fields=['score', 'score_breakdown', 'updated_at'])
+
+    @transaction.atomic
+    def perform_create(self, serializer):
+        super().perform_create(serializer)
+        self._apply_score(serializer.instance)
+
+    @transaction.atomic
+    def perform_update(self, serializer):
+        super().perform_update(serializer)
+        self._apply_score(serializer.instance)
 
     @action(detail=True, methods=['post'], url_path='convert')
     def convert(self, request, pk=None):
+        # Resolve via the scoped queryset first so foreign-tenant ids remain indistinguishable from missing ids.
         lead = self.get_object()
-        if lead.status == Lead.Status.CONVERTED:
-            return Response({'detail': 'Lead is already converted.'}, status=status.HTTP_400_BAD_REQUEST)
-
         payload = LeadConvertSerializer(data=request.data, context=self.get_serializer_context())
         payload.is_valid(raise_exception=True)
-        data = payload.validated_data
-        org = self.org
-
-        with transaction.atomic():
-            company = None
-            if lead.company_name:
-                company, _ = Company.objects.get_or_create(organization=org, name=lead.company_name)
-
-            contact = Contact.objects.create(
-                organization=org,
-                created_by=request.user,
-                first_name=lead.first_name,
-                last_name=lead.last_name,
-                email=lead.email,
-                phone=lead.phone,
-                job_title=lead.job_title,
-                source=lead.source,
-                owner=lead.owner,
-                description=lead.description,
-                company=company,
-            )
-
-            deal = None
-            if data.get('create_deal'):
-                pipeline = data.get('pipeline')
-                if pipeline is None:
-                    pipeline = (
-                        Pipeline.objects.filter(organization=org, is_default=True).first()
-                        or Pipeline.objects.filter(organization=org).order_by('id').first()
-                    )
-                if pipeline is None:
-                    return Response(
-                        {'detail': 'No pipeline available to create a deal.'},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-                stage = data.get('stage') or pipeline.stages.first()
-                if stage is not None and stage.pipeline_id != pipeline.id:
-                    return Response(
-                        {'stage': ['Stage does not belong to the selected pipeline.']},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-                deal = Deal.objects.create(
-                    organization=org,
-                    created_by=request.user,
-                    title=data.get('deal_title') or f'{lead.full_name} deal',
-                    value=data.get('deal_value') or lead.estimated_value or 0,
-                    currency=org.currency,
-                    pipeline=pipeline,
-                    stage=stage,
-                    contact=contact,
-                    company=company,
-                    owner=lead.owner,
-                )
-
-            lead.status = Lead.Status.CONVERTED
-            lead.converted_at = timezone.now()
-            lead.converted_contact = contact
-            lead.converted_deal = deal
-            lead.save()
-
-        return Response(
-            {
-                'lead': LeadSerializer(lead, context=self.get_serializer_context()).data,
-                'contact_id': contact.id,
-                'company_id': company.id if company else None,
-                'deal_id': deal.id if deal else None,
-            }
+        result = convert_lead(
+            lead_id=lead.pk,
+            organization=self.org,
+            actor=request.user,
+            data=payload.validated_data,
         )
+        result['lead'] = self.get_serializer(result['lead']).data
+        return Response(result)

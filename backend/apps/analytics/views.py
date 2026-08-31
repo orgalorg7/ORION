@@ -43,13 +43,13 @@ class DashboardView(APIView):
         month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         next_month_start = _shift_month(month_start, 1)
 
-        deals = Deal.objects.filter(organization=org)
+        deals = Deal.objects.filter(organization=org, archived_at__isnull=True)
         open_deals = deals.filter(status=Deal.Status.OPEN)
         won_this_month = deals.filter(
             status=Deal.Status.WON, closed_at__gte=month_start, closed_at__lt=next_month_start
         )
         leads = Lead.objects.filter(organization=org)
-        activities = Activity.objects.filter(organization=org)
+        activities = Activity.objects.filter(organization=org, archived_at__isnull=True)
 
         totals = {
             'contacts': Contact.objects.filter(organization=org).count(),
@@ -80,13 +80,15 @@ class DashboardView(APIView):
             ],
             'upcoming_activities': [
                 _activity_item(activity)
-                for activity in activities.filter(completed=False, due_at__gte=now).order_by('due_at')[:5]
+                for activity in activities.filter(
+                    status__in=(Activity.Status.OPEN, Activity.Status.IN_PROGRESS), due_at__gte=now
+                ).order_by('due_at')[:5]
             ],
             'top_deals': self._top_deals(open_deals),
         })
 
     def _deals_by_stage(self, request, org, open_deals):
-        pipelines = Pipeline.objects.filter(organization=org)
+        pipelines = Pipeline.objects.filter(organization=org, active=True, archived_at__isnull=True)
         pipeline = None
         pipeline_id = request.query_params.get('pipeline')
         if pipeline_id:

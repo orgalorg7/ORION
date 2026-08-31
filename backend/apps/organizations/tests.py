@@ -22,7 +22,7 @@ class LocalizedAccountDefaultsTests(TestCase):
         self.assertEqual(pipeline.name, 'مسار المبيعات')
         self.assertEqual(
             list(pipeline.stages.order_by('order').values_list('name', flat=True)),
-            ['التأهيل', 'الاجتماع', 'العرض', 'التفاوض', 'الإغلاق'],
+            ['فرصة جديدة', 'مؤهل', 'العرض', 'التفاوض', 'تم الفوز', 'تمت الخسارة'],
         )
 
     def test_english_registration_keeps_english_system_pipeline(self):
@@ -32,5 +32,5 @@ class LocalizedAccountDefaultsTests(TestCase):
         self.assertEqual(pipeline.name, 'Sales Pipeline')
         self.assertEqual(
             list(pipeline.stages.order_by('order').values_list('name', flat=True)),
-            ['Qualification', 'Meeting', 'Proposal', 'Negotiation', 'Closing'],
+            ['New Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won', 'Lost'],
         )

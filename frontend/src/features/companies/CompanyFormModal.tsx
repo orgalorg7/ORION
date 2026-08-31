@@ -1,12 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import { companiesApi } from '@/api/contacts';
 import { organizationsApi } from '@/api/organizations';
+import { CustomFieldsEditor } from '@/components/shared/CustomFieldsEditor';
 import { Button, FormField, Input, Modal, Select, Textarea, toast } from '@/components/ui';
 import { apiErrorMessage } from '@/lib/api';
-import type { Company } from '@/types';
+import type { Company, DuplicateCandidate } from '@/types';
 
 import { COMPANY_SIZES } from './constants';
 
@@ -24,6 +26,7 @@ interface FormState {
   annual_revenue: string;
   owner: string;
   description: string;
+  custom_fields: Record<string, unknown>;
 }
 
 const emptyForm: FormState = {
@@ -40,6 +43,7 @@ const emptyForm: FormState = {
   annual_revenue: '',
   owner: '',
   description: '',
+  custom_fields: {},
 };
 
 export function CompanyFormModal({
@@ -53,7 +57,9 @@ export function CompanyFormModal({
 }) {
   const { t } = useTranslation(['companies', 'common']);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [form, setForm] = useState<FormState>(emptyForm);
+  const [duplicates, setDuplicates] = useState<DuplicateCandidate[]>([]);
 
   useEffect(() => {
     if (open) {
@@ -73,9 +79,11 @@ export function CompanyFormModal({
               annual_revenue: company.annual_revenue ?? '',
               owner: company.owner ? String(company.owner) : '',
               description: company.description,
+              custom_fields: company.custom_fields,
             }
           : emptyForm,
       );
+      setDuplicates([]);
     }
   }, [open, company]);
 
@@ -86,7 +94,7 @@ export function CompanyFormModal({
   });
 
   const mutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async (createAnyway: boolean) => {
       const payload: Partial<Company> = {
         name: form.name,
         domain: form.domain,
@@ -101,10 +109,16 @@ export function CompanyFormModal({
         annual_revenue: form.annual_revenue.trim() ? form.annual_revenue.trim() : null,
         owner: form.owner ? Number(form.owner) : null,
         description: form.description,
+        custom_fields: form.custom_fields,
       };
+      if (!company && !createAnyway) {
+        const result = await companiesApi.duplicateCheck(payload);
+        if (result.candidates.length) { setDuplicates(result.candidates); return null; }
+      }
       return company ? companiesApi.update(company.id, payload) : companiesApi.create(payload);
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (!result) return;
       toast.success(company ? t('common:toast.saved') : t('common:toast.created'));
       queryClient.invalidateQueries({ queryKey: ['companies'] });
       onClose();
@@ -128,7 +142,7 @@ export function CompanyFormModal({
             {t('common:actions.cancel')}
           </Button>
           <Button
-            onClick={() => mutation.mutate()}
+            onClick={() => mutation.mutate(false)}
             loading={mutation.isPending}
             disabled={!form.name.trim()}
           >
@@ -138,6 +152,7 @@ export function CompanyFormModal({
       }
     >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {duplicates.length > 0 && <div className="sm:col-span-2 rounded-xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-500/10"><p className="font-semibold">{t('common:customerCore.possibleDuplicate')}</p><p className="mt-1 text-sm">{t('common:customerCore.duplicateExplanation')}</p>{duplicates.slice(0, 3).map((candidate) => <div key={candidate.candidate_id} className="mt-3 flex items-center justify-between border-t border-amber-200 pt-3 dark:border-amber-800"><div><p className="text-sm font-semibold">{candidate.display_name}</p><p className="text-xs">{t('common:customerCore.matched', { reasons: candidate.match_reasons.join(', ') })}</p></div><Button size="sm" variant="outline" onClick={() => navigate(`/app/companies/${candidate.candidate_id}`)}>{t('common:customerCore.viewExisting')}</Button></div>)}<Button className="mt-4" size="sm" onClick={() => mutation.mutate(true)}>{t('common:customerCore.createAnyway')}</Button></div>}
         <FormField label={t('common:labels.name')} required className="sm:col-span-2">
           <Input value={form.name} onChange={set('name')} autoFocus />
         </FormField>
@@ -191,6 +206,7 @@ export function CompanyFormModal({
         <FormField label={t('common:labels.description')} className="sm:col-span-2">
           <Textarea value={form.description} onChange={set('description')} />
         </FormField>
+        <CustomFieldsEditor target="company" values={form.custom_fields} onChange={(custom_fields) => setForm((current) => ({ ...current, custom_fields }))} />
       </div>
     </Modal>
   );

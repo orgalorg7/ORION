@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { CheckCircle2, Pencil, Trash2 } from 'lucide-react';
+import { Archive, CheckCircle2, Pencil, RotateCcw } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -7,6 +7,9 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { leadsApi } from '@/api/leads';
 import { ActivitiesPanel } from '@/components/shared/ActivitiesPanel';
 import { NotesPanel } from '@/components/shared/NotesPanel';
+import { TimelinePanel } from '@/components/shared/TimelinePanel';
+import { CustomFieldsSummary } from '@/components/shared/CustomFieldsEditor';
+import { TagManager } from '@/components/shared/TagManager';
 import {
   Avatar,
   BackIcon,
@@ -58,11 +61,14 @@ export function LeadDetailPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: () => leadsApi.remove(leadId),
+    mutationFn: async () => {
+      if (lead?.archived_at) await leadsApi.restore(leadId);
+      else await leadsApi.remove(leadId);
+    },
     onSuccess: () => {
-      toast.success(t('common:toast.deleted'));
+      toast.success(t(lead?.archived_at ? 'common:toast.restored' : 'common:toast.archived'));
       queryClient.invalidateQueries({ queryKey: ['leads'] });
-      navigate('/app/leads');
+      if (!lead?.archived_at) navigate('/app/leads');
     },
     onError: (error) => toast.error(apiErrorMessage(error)),
   });
@@ -113,19 +119,19 @@ export function LeadDetailPage() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {!isConverted && (
+          {!isConverted && !lead.archived_at && (
             <Button onClick={() => setConvertOpen(true)}>
               <ForwardUpIcon className="h-4 w-4" />
               {t('leads:convert.action')}
             </Button>
           )}
-          <Button variant="outline" onClick={() => setEditOpen(true)}>
+          {!lead.archived_at && <Button variant="outline" onClick={() => setEditOpen(true)}>
             <Pencil className="h-4 w-4" />
             {t('common:actions.edit')}
-          </Button>
-          <Button variant="danger" onClick={() => setDeleteOpen(true)}>
-            <Trash2 className="h-4 w-4" />
-            {t('common:actions.delete')}
+          </Button>}
+          <Button variant={lead.archived_at ? 'outline' : 'danger'} onClick={() => lead.archived_at ? deleteMutation.mutate() : setDeleteOpen(true)}>
+            {lead.archived_at ? <RotateCcw className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
+            {t(lead.archived_at ? 'common:actions.restore' : 'common:actions.archive')}
           </Button>
         </div>
       </div>
@@ -176,7 +182,7 @@ export function LeadDetailPage() {
                 <DetailRow label={t('leads:fields.companyName')} value={lead.company_name || '—'} />
                 <DetailRow
                   label={t('common:labels.source')}
-                  value={lead.source ? t(`common:sources.${lead.source}`) : '—'}
+                  value={lead.source_detail?.label || lead.source || '—'}
                 />
                 <DetailRow label={t('leads:fields.score')} value={<ScoreBar score={lead.score} />} />
                 <DetailRow
@@ -190,7 +196,7 @@ export function LeadDetailPage() {
                     <Select
                       value={lead.status}
                       onChange={(event) => statusMutation.mutate(event.target.value as LeadStatus)}
-                      disabled={isConverted || statusMutation.isPending}
+                      disabled={isConverted || Boolean(lead.archived_at) || statusMutation.isPending}
                       className="w-40 py-1.5 text-sm"
                     >
                       {EDITABLE_LEAD_STATUSES.map((status) => (
@@ -213,11 +219,14 @@ export function LeadDetailPage() {
               )}
             </CardBody>
           </Card>
+          <CustomFieldsSummary values={lead.custom_fields} />
+          <TagManager type="lead" id={leadId} tags={lead.tags_detail} readOnly={Boolean(lead.archived_at)} />
         </div>
 
         <div className="space-y-6 lg:col-span-2">
-          <ActivitiesPanel related={{ lead: leadId }} />
-          <NotesPanel related={{ lead: leadId }} />
+          <ActivitiesPanel related={{ lead: leadId }} readOnly={Boolean(lead.archived_at)} />
+          <NotesPanel related={{ lead: leadId }} readOnly={Boolean(lead.archived_at)} />
+          <TimelinePanel type="lead" id={leadId} />
         </div>
       </div>
 
@@ -227,9 +236,11 @@ export function LeadDetailPage() {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onConfirm={() => deleteMutation.mutate()}
-        title={t('common:confirmDelete.title', { item: fullName(lead) })}
+        title={t('common:confirmArchive.title', { item: fullName(lead) })}
+        message={t('common:confirmArchive.message')}
         loading={deleteMutation.isPending}
-        confirmLabel={t('common:actions.delete')}
+        confirmLabel={t('common:actions.archive')}
+        danger={false}
       />
     </div>
   );

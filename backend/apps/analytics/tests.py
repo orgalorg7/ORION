@@ -40,18 +40,16 @@ class DashboardApiTests(APITestCase):
             organization=self.org_a, first_name='Omar', source='',
             status=Lead.Status.CONTACTED, created_by=self.user_a,
         )
-        # Replace the pipeline auto-created by register_account so deals_by_stage
-        # reflects exactly the stages seeded here.
-        Pipeline.objects.filter(organization=self.org_a).delete()
-        pipeline = Pipeline.objects.create(organization=self.org_a, name='Sales', is_default=True)
-        stage = Stage.objects.create(organization=self.org_a, pipeline=pipeline, name='Qualified', order=0)
+        pipeline = Pipeline.objects.get(organization=self.org_a, is_default=True)
+        stage = pipeline.stages.get(name='Qualified')
+        won_stage = pipeline.stages.get(stage_type=Stage.Type.WON)
         Deal.objects.create(
             organization=self.org_a, title='Big deal', value=Decimal('1000.00'),
             pipeline=pipeline, stage=stage, company=company, created_by=self.user_a,
         )
         Deal.objects.create(
             organization=self.org_a, title='Won deal', value=Decimal('500.00'),
-            pipeline=pipeline, stage=stage, status=Deal.Status.WON,
+            pipeline=pipeline, stage=won_stage, status=Deal.Status.WON,
             closed_at=timezone.now(), created_by=self.user_a,
         )
         Activity.objects.create(
@@ -107,12 +105,12 @@ class DashboardApiTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.data)
 
         by_stage = response.data['deals_by_stage']
-        self.assertEqual(len(by_stage), 1)
-        self.assertEqual(by_stage[0]['stage_id'], stage.id)
-        self.assertEqual(by_stage[0]['stage_name'], 'Qualified')
-        self.assertEqual(by_stage[0]['color'], stage.color)
-        self.assertEqual(by_stage[0]['count'], 1)
-        self.assertEqual(by_stage[0]['value'], 1000.0)
+        self.assertEqual(len(by_stage), pipeline.stages.count())
+        qualified = next(item for item in by_stage if item['stage_id'] == stage.id)
+        self.assertEqual(qualified['stage_name'], 'Qualified')
+        self.assertEqual(qualified['color'], stage.color)
+        self.assertEqual(qualified['count'], 1)
+        self.assertEqual(qualified['value'], 1000.0)
 
         top = response.data['top_deals']
         self.assertEqual(len(top), 1)

@@ -10,6 +10,7 @@ __pycache__/
 .venv/
 venv/
 *.sqlite3
+backend/customer-imports/
 
 # Node / frontend
 node_modules/

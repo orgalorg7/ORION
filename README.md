@@ -75,6 +75,28 @@ service and reference its `DATABASE_URL` from the app service for persistent dat
 falls back to ephemeral SQLite storage. Finally, generate a public domain from the service's Networking
 settings. Railway supplies `PORT` and its public domain to the container automatically.
 
+Deploy the same image as a second service with `PROCESS_TYPE=activity-worker` for reminder handoff
+and bounded recurrence generation. Work is claimed through PostgreSQL row locks and uniqueness
+constraints, so multiple worker replicas are safe. Cron-style environments can instead run
+`python manage.py process_activity_jobs --once` once per minute. `ACTIVITY_POLL_SECONDS` and
+`ACTIVITY_BATCH_SIZE` tune the continuous worker's bounded batches.
+
+## CI/CD
+
+GitHub Actions runs the production gates for every pull request to `main` and every push to `main`:
+
+- the complete Django suite against PostgreSQL 16, including migration and deployment-security checks;
+- frontend typechecking, linting, tests, and the Vite production build;
+- the production Docker build after both application jobs pass.
+
+Successful pushes publish immutable commit tags plus `main` and `latest` to
+`ghcr.io/<owner>/<repository>`. Action dependencies are pinned to immutable commit SHAs and the
+container is published with provenance and an SBOM.
+
+Railway remains connected to the GitHub `main` branch. Enable **Wait for CI** for both the web and
+activity-worker services so a commit is deployed only after the workflow succeeds. The worker service
+must use the same commit/image as the web service and retain `PROCESS_TYPE=activity-worker`.
+
 ## Architecture notes
 
 - **Multi-tenancy:** shared database/schema. Every tenant model inherits `TenantModel`

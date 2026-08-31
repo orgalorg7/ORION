@@ -108,10 +108,11 @@ export function TagSettings() {
   const [newName, setNewName] = useState('');
   const [newColor, setNewColor] = useState(DEFAULT_TAG_COLOR);
 
-  const { data: tags, isLoading } = useQuery({
+  const { data: tagsPage, isLoading } = useQuery({
     queryKey: ['tags'],
-    queryFn: () => tagsApi.list(),
+    queryFn: () => tagsApi.list({ page_size: 100 }),
   });
+  const tags = tagsPage?.results ?? [];
 
   const createMutation = useMutation({
     mutationFn: () => tagsApi.create({ name: newName.trim(), color: newColor }),
@@ -132,7 +133,7 @@ export function TagSettings() {
           <div className="flex justify-center py-10">
             <Spinner className="h-6 w-6 text-primary-600" />
           </div>
-        ) : (tags ?? []).length === 0 ? (
+        ) : tags.length === 0 ? (
           <EmptyState
             icon={<Tags className="h-5 w-5" />}
             title={t('settings:tags.empty')}
@@ -140,7 +141,7 @@ export function TagSettings() {
           />
         ) : (
           <div className="divide-y divide-gray-100 dark:divide-gray-800/70">
-            {(tags ?? []).map((tag) => (
+            {tags.map((tag) => (
               <TagRow key={tag.id} tag={tag} />
             ))}
           </div>

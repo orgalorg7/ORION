@@ -1,203 +1,74 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { CalendarCheck, Mail, Phone, Plus, Trash2, Users } from 'lucide-react';
+import { CalendarCheck, CalendarDays, Phone, Plus, Users } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { activitiesApi } from '@/api/activities';
-import {
-  Button,
-  Card,
-  CardHeader,
-  Checkbox,
-  EmptyState,
-  FormField,
-  Input,
-  Modal,
-  Select,
-  Spinner,
-  toast,
-} from '@/components/ui';
+import { activitiesApi, activityOutcomesApi } from '@/api/activities';
+import { ActivityFormModal } from '@/features/activities/ActivityFormModal';
+import { Button, Card, CardHeader, Checkbox, EmptyState, FormField, Input, Modal, Select, Spinner, Textarea, toast } from '@/components/ui';
 import { apiErrorMessage } from '@/lib/api';
-import { cn, formatDateTime } from '@/lib/utils';
-import type { ActivityType } from '@/types';
-
+import { cn, formatDate, formatDateTime } from '@/lib/utils';
+import type { Activity, ActivityType } from '@/types';
 import type { RelatedFilter } from './NotesPanel';
 
-const typeIcons: Record<ActivityType, ReactNode> = {
-  call: <Phone className="h-4 w-4" />,
-  email: <Mail className="h-4 w-4" />,
-  meeting: <Users className="h-4 w-4" />,
-  task: <CalendarCheck className="h-4 w-4" />,
+const icons: Record<ActivityType, ReactNode> = {
+  task: <CalendarCheck className="h-4 w-4" />, call: <Phone className="h-4 w-4" />,
+  meeting: <Users className="h-4 w-4" />, follow_up: <CalendarDays className="h-4 w-4" />,
+  reminder: <CalendarCheck className="h-4 w-4" />, email: <CalendarCheck className="h-4 w-4" />,
 };
 
-export function ActivitiesPanel({ related }: { related: RelatedFilter }) {
+export function ActivitiesPanel({ related, readOnly = false }: { related: RelatedFilter; readOnly?: boolean }) {
   const { t } = useTranslation('common');
   const queryClient = useQueryClient();
-  const [modalOpen, setModalOpen] = useState(false);
-  const [form, setForm] = useState({ type: 'task' as ActivityType, title: '', due_at: '' });
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['activities', related],
-    queryFn: () => activitiesApi.list({ ...related, page_size: 50 }),
+  const [createType, setCreateType] = useState<ActivityType | null>(null);
+  const [completion, setCompletion] = useState<Activity | null>(null);
+  const [outcomeId, setOutcomeId] = useState('');
+  const [notes, setNotes] = useState('');
+  const [duration, setDuration] = useState('');
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['activities', related], queryFn: () => activitiesApi.list({ ...related, completed: false, page_size: 20, ordering: 'due_at' }),
   });
-
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['activities'] });
-
-  const createMutation = useMutation({
-    mutationFn: () =>
-      activitiesApi.create({
-        type: form.type,
-        title: form.title,
-        due_at: form.due_at ? new Date(form.due_at).toISOString() : null,
-        ...related,
-      }),
-    onSuccess: () => {
-      setModalOpen(false);
-      setForm({ type: 'task', title: '', due_at: '' });
-      invalidate();
-    },
+  const { data: outcomes } = useQuery({
+    queryKey: ['activity-outcomes', completion?.type],
+    queryFn: () => activityOutcomesApi.list(completion?.type === 'call' ? 'call' : 'meeting'),
+    enabled: completion?.type === 'call' || completion?.type === 'meeting',
+  });
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ['activities'] });
+    const [type, id] = Object.entries(related)[0] ?? [];
+    if (type && id) queryClient.invalidateQueries({ queryKey: ['timeline', type, id] });
+  };
+  const complete = useMutation({
+    mutationFn: (activity: Activity) => activitiesApi.complete(activity.id, true, {
+      expected_version: activity.version,
+      outcome_definition: outcomeId ? Number(outcomeId) : undefined,
+      outcome: notes,
+      duration_seconds: duration ? Number(duration) * 60 : undefined,
+    }),
+    onSuccess: () => { setCompletion(null); setOutcomeId(''); setNotes(''); setDuration(''); invalidate(); },
     onError: (error) => toast.error(apiErrorMessage(error)),
   });
+  const requestCompletion = (activity: Activity) => activity.type === 'call' || activity.type === 'meeting'
+    ? setCompletion(activity) : complete.mutate(activity);
+  const rows = data?.results ?? [];
 
-  const toggleMutation = useMutation({
-    mutationFn: ({ id, completed }: { id: number; completed: boolean }) =>
-      activitiesApi.complete(id, completed),
-    onSuccess: invalidate,
-    onError: (error) => toast.error(apiErrorMessage(error)),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: number) => activitiesApi.remove(id),
-    onSuccess: invalidate,
-    onError: (error) => toast.error(apiErrorMessage(error)),
-  });
-
-  const activities = data?.results ?? [];
-
-  return (
-    <Card>
-      <CardHeader
-        title={t('activitiesPanel.title')}
-        actions={
-          <Button size="sm" variant="secondary" onClick={() => setModalOpen(true)}>
-            <Plus className="h-4 w-4" />
-            {t('activitiesPanel.add')}
-          </Button>
-        }
-      />
-      <div className="p-5">
-        {isLoading ? (
-          <div className="flex justify-center py-6">
-            <Spinner className="text-primary-600" />
-          </div>
-        ) : activities.length === 0 ? (
-          <EmptyState
-            icon={<CalendarCheck className="h-5 w-5" />}
-            title={t('activitiesPanel.empty')}
-            className="py-6"
-          />
-        ) : (
-          <ul className="space-y-2">
-            {activities.map((activity) => (
-              <li
-                key={activity.id}
-                className="group flex items-center gap-3 rounded-lg border border-gray-100 p-3 dark:border-gray-800"
-              >
-                <Checkbox
-                  checked={activity.completed}
-                  onChange={(event) =>
-                    toggleMutation.mutate({ id: activity.id, completed: event.target.checked })
-                  }
-                />
-                <span
-                  className={cn(
-                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
-                    activity.completed
-                      ? 'bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500'
-                      : 'bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400',
-                  )}
-                >
-                  {typeIcons[activity.type]}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p
-                    dir="auto"
-                    className={cn(
-                      'truncate text-start text-sm font-medium',
-                      activity.completed
-                        ? 'text-gray-400 line-through dark:text-gray-500'
-                        : 'text-gray-800 dark:text-gray-200',
-                    )}
-                  >
-                    {activity.title}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {t(`activitiesPanel.types.${activity.type}`)}
-                    {activity.due_at && ` · ${formatDateTime(activity.due_at)}`}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => deleteMutation.mutate(activity.id)}
-                  className="text-gray-400 opacity-100 transition-opacity hover:text-red-500 sm:opacity-0 sm:group-hover:opacity-100 dark:text-gray-500"
-                  aria-label={t('actions.delete')}
-                  title={t('actions.delete')}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <Modal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={t('activitiesPanel.add')}
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setModalOpen(false)}>
-              {t('actions.cancel')}
-            </Button>
-            <Button onClick={() => createMutation.mutate()} loading={createMutation.isPending} disabled={!form.title.trim()}>
-              {t('actions.save')}
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <FormField label={t('labels.name')} required>
-            <Input
-              value={form.title}
-              onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
-              placeholder={t('activitiesPanel.titlePlaceholder')}
-              autoFocus
-            />
-          </FormField>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <FormField label={t('labels.status')}>
-              <Select
-                value={form.type}
-                onChange={(event) => setForm((prev) => ({ ...prev, type: event.target.value as ActivityType }))}
-              >
-                {(['task', 'call', 'email', 'meeting'] as const).map((type) => (
-                  <option key={type} value={type}>
-                    {t(`activitiesPanel.types.${type}`)}
-                  </option>
-                ))}
-              </Select>
-            </FormField>
-            <FormField label={t('activitiesPanel.dueAt')}>
-              <Input
-                type="datetime-local"
-                value={form.due_at}
-                onChange={(event) => setForm((prev) => ({ ...prev, due_at: event.target.value }))}
-              />
-            </FormField>
-          </div>
-        </div>
-      </Modal>
-    </Card>
-  );
+  return <Card>
+    <CardHeader title={t('activitiesPanel.title')} actions={!readOnly ? <div className="flex flex-wrap gap-1">
+      {(['task', 'call', 'meeting', 'follow_up'] as ActivityType[]).map((type) => <Button key={type} size="sm" variant="ghost" onClick={() => setCreateType(type)}>{icons[type]}<span className="hidden sm:inline">{type.replace('_', ' ')}</span></Button>)}
+    </div> : undefined} />
+    <div className="p-5">
+      {isLoading ? <div className="flex justify-center py-8"><Spinner className="text-primary-600" /></div> : isError ? <EmptyState title="Activities unavailable" description="Refresh to try again." /> : !rows.length ? <EmptyState icon={<CalendarCheck className="h-5 w-5" />} title="No activity yet" description="Schedule the next customer action while the context is fresh." action={!readOnly ? <Button size="sm" onClick={() => setCreateType('task')}><Plus className="h-4 w-4" />Create activity</Button> : undefined} /> : <ul className="divide-y divide-line">
+        {rows.map((activity) => <li key={activity.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+          <Checkbox checked={activity.completed} disabled={readOnly || activity.status === 'cancelled' || complete.isPending} onChange={() => requestCompletion(activity)} aria-label={`Complete ${activity.title}`} />
+          <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-lg', activity.completed ? 'bg-gray-100 text-gray-400' : activity.is_overdue ? 'bg-red-50 text-red-600' : 'bg-primary-50 text-primary-600')}>{icons[activity.type]}</span>
+          <div className="min-w-0 flex-1"><p dir="auto" className={cn('truncate text-sm font-medium', activity.completed && 'text-gray-400 line-through')}>{activity.title}</p><p className={cn('text-xs', activity.is_overdue ? 'text-red-600' : 'text-gray-500')}>{activity.type.replace('_', ' ')} · {activity.all_day ? formatDate(activity.due_date) : formatDateTime(activity.starts_at || activity.due_at)}</p></div>
+          <span className="rounded-md bg-surface-muted px-2 py-1 text-[11px] font-semibold uppercase text-muted">{activity.priority}</span>
+        </li>)}
+      </ul>}
+    </div>
+    <ActivityFormModal open={Boolean(createType)} onClose={() => setCreateType(null)} initialType={createType ?? 'task'} related={related} />
+    <Modal open={Boolean(completion)} onClose={() => setCompletion(null)} title={`Complete ${completion?.type ?? 'activity'}`} footer={<><Button variant="outline" onClick={() => setCompletion(null)}>Cancel</Button><Button loading={complete.isPending} onClick={() => completion && complete.mutate(completion)}>Complete</Button></>}>
+      <div className="space-y-4"><FormField label="Outcome"><Select value={outcomeId} onChange={(event) => setOutcomeId(event.target.value)}><option value="">Select an outcome</option>{outcomes?.results.map((outcome) => <option key={outcome.id} value={outcome.id}>{outcome.label}</option>)}</Select></FormField>{completion?.type === 'call' && <FormField label="Duration (minutes)"><Input type="number" min="0" max="1440" value={duration} onChange={(event) => setDuration(event.target.value)} /></FormField>}<FormField label="Notes"><Textarea value={notes} onChange={(event) => setNotes(event.target.value)} rows={3} /></FormField></div>
+    </Modal>
+  </Card>;
 }

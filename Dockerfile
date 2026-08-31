@@ -29,4 +29,4 @@ RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py migrate --noinput && exec gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers ${WEB_CONCURRENCY:-2} --timeout 120 --access-logfile - --error-logfile -"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && if [ \"${PROCESS_TYPE:-web}\" = \"activity-worker\" ]; then exec python manage.py process_activity_jobs --poll-seconds ${ACTIVITY_POLL_SECONDS:-30} --batch-size ${ACTIVITY_BATCH_SIZE:-100}; else exec gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers ${WEB_CONCURRENCY:-2} --timeout 120 --access-logfile - --error-logfile -; fi"]

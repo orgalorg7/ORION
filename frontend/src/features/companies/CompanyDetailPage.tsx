@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Contact2, Pencil, Trash2 } from 'lucide-react';
+import { Archive, Contact2, Pencil, RotateCcw } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -7,10 +7,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { companiesApi, contactsApi } from '@/api/contacts';
 import { ActivitiesPanel } from '@/components/shared/ActivitiesPanel';
 import { NotesPanel } from '@/components/shared/NotesPanel';
+import { TimelinePanel } from '@/components/shared/TimelinePanel';
+import { CustomFieldsSummary } from '@/components/shared/CustomFieldsEditor';
+import { TagManager } from '@/components/shared/TagManager';
 import {
   Avatar,
   BackIcon,
-  Badge,
   Button,
   Card,
   CardBody,
@@ -60,11 +62,14 @@ export function CompanyDetailPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: () => companiesApi.remove(companyId),
+    mutationFn: async () => {
+      if (company?.archived_at) await companiesApi.restore(companyId);
+      else await companiesApi.remove(companyId);
+    },
     onSuccess: () => {
-      toast.success(t('common:toast.deleted'));
+      toast.success(t(company?.archived_at ? 'common:toast.restored' : 'common:toast.archived'));
       queryClient.invalidateQueries({ queryKey: ['companies'] });
-      navigate('/app/companies');
+      if (!company?.archived_at) navigate('/app/companies');
     },
     onError: (error) => toast.error(apiErrorMessage(error)),
   });
@@ -134,13 +139,13 @@ export function CompanyDetailPage() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" onClick={() => setEditOpen(true)}>
+          {!company.archived_at && <Button variant="outline" onClick={() => setEditOpen(true)}>
             <Pencil className="h-4 w-4" />
             {t('common:actions.edit')}
-          </Button>
-          <Button variant="danger" onClick={() => setDeleteOpen(true)}>
-            <Trash2 className="h-4 w-4" />
-            {t('common:actions.delete')}
+          </Button>}
+          <Button variant={company.archived_at ? 'outline' : 'danger'} onClick={() => company.archived_at ? deleteMutation.mutate() : setDeleteOpen(true)}>
+            {company.archived_at ? <RotateCcw className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
+            {t(company.archived_at ? 'common:actions.restore' : 'common:actions.archive')}
           </Button>
         </div>
       </div>
@@ -208,15 +213,6 @@ export function CompanyDetailPage() {
                 />
                 <DetailRow label={t('common:labels.createdAt')} value={formatDate(company.created_at)} />
               </dl>
-              {company.tags_detail.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-1">
-                  {company.tags_detail.map((tag) => (
-                    <Badge key={tag.id} color="indigo">
-                      {tag.name}
-                    </Badge>
-                  ))}
-                </div>
-              )}
               {company.description && (
                 <p dir="auto" className="mt-3 whitespace-pre-wrap rounded-lg bg-gray-50 p-3 text-start text-sm text-gray-600 dark:bg-gray-800/60 dark:text-gray-300">
                   {company.description}
@@ -224,6 +220,8 @@ export function CompanyDetailPage() {
               )}
             </CardBody>
           </Card>
+          <CustomFieldsSummary values={company.custom_fields} />
+          <TagManager type="company" id={companyId} tags={company.tags_detail} readOnly={Boolean(company.archived_at)} />
         </div>
 
         <div className="space-y-6 lg:col-span-2">
@@ -243,8 +241,9 @@ export function CompanyDetailPage() {
               }
             />
           </Card>
-          <ActivitiesPanel related={{ company: companyId }} />
-          <NotesPanel related={{ company: companyId }} />
+          <ActivitiesPanel related={{ company: companyId }} readOnly={Boolean(company.archived_at)} />
+          <NotesPanel related={{ company: companyId }} readOnly={Boolean(company.archived_at)} />
+          <TimelinePanel type="company" id={companyId} />
         </div>
       </div>
 
@@ -253,9 +252,11 @@ export function CompanyDetailPage() {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onConfirm={() => deleteMutation.mutate()}
-        title={t('common:confirmDelete.title', { item: company.name })}
+        title={t('common:confirmArchive.title', { item: company.name })}
+        message={t('common:confirmArchive.message')}
         loading={deleteMutation.isPending}
-        confirmLabel={t('common:actions.delete')}
+        confirmLabel={t('common:actions.archive')}
+        danger={false}
       />
     </div>
   );

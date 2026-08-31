@@ -184,7 +184,7 @@ class Command(BaseCommand):
                 title=title,
                 contact=contact,
                 due_at=now + timedelta(days=day_offset),
-                completed=completed,
+                status=Activity.Status.COMPLETED if completed else Activity.Status.OPEN,
                 completed_at=now - timedelta(days=1) if completed else None,
                 assigned_to=user,
             )

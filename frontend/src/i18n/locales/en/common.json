@@ -38,6 +38,8 @@
     "export": "Export",
     "import": "Import",
     "more": "More"
+    ,"archive": "Archive",
+    "restore": "Restore"
   },
   "labels": {
     "name": "Name",
@@ -102,11 +104,17 @@
     "title": "Delete {{item}}?",
     "message": "This action cannot be undone."
   },
+  "confirmArchive": {
+    "title": "Archive {{item}}?",
+    "message": "The record will leave active views and can be restored later."
+  },
   "toast": {
     "saved": "Saved successfully",
     "created": "Created successfully",
     "deleted": "Deleted successfully",
     "error": "Something went wrong"
+    ,"archived": "Archived successfully",
+    "restored": "Restored successfully"
   },
   "errors": {
     "requestFailed": "We couldn't complete the request. Please try again.",
@@ -157,5 +165,56 @@
       "meeting": "Meeting",
       "task": "Task"
     }
+  },
+  "customerCore": {
+    "advancedFilters": "Advanced filters",
+    "hideFilters": "Hide filters",
+    "columns": "Columns",
+    "selected": "{{count}} selected",
+    "bulkArchive": "Archive selected",
+    "bulkRestore": "Restore selected",
+    "bulkStatus": "Change status",
+    "bulkOwner": "Assign owner",
+    "scoreMin": "Minimum score",
+    "scoreMax": "Maximum score",
+    "lifecycle": "Lifecycle",
+    "archived": "Archived records",
+    "activeOnly": "Active only",
+    "archivedOnly": "Archived only",
+    "includeArchived": "All records",
+    "sort": "Sort",
+    "importTitle": "Import customer records",
+    "uploadCsv": "Choose CSV file",
+    "csvHint": "UTF-8 CSV, up to 50 MB. Your data is validated before import.",
+    "mapColumns": "Map columns",
+    "skipColumn": "Do not import",
+    "processImport": "Start import",
+    "importComplete": "Import complete",
+    "successful": "Successful",
+    "failed": "Failed",
+    "skipped": "Skipped",
+    "duplicates": "Possible duplicates",
+    "possibleDuplicate": "Possible duplicate found",
+    "duplicateExplanation": "Review the matching record before creating another copy.",
+    "createAnyway": "Create anyway",
+    "viewExisting": "View existing",
+    "matched": "Matched: {{reasons}}",
+    "duplicatePolicy": "When duplicates are found",
+    "skipDuplicates": "Skip and report duplicates",
+    "createDuplicates": "Create anyway",
+    "rowNumber": "Row",
+    "field": "Field",
+    "reason": "Reason",
+    "selectRow": "Select {{name}}",
+    "selectAll": "Select all visible rows",
+    "emptyLeads": "No leads yet. Create your first lead or import an existing customer list.",
+    "emptyContacts": "No contacts yet. Create a contact or import your customer list.",
+    "emptyCompanies": "No companies yet. Add an organization or import your account list."
+    ,"timeline": "Activity timeline",
+    "timelineEmpty": "No history has been recorded yet"
+    ,"customFields": "Custom fields",
+    "customFieldsEmpty": "No custom fields configured"
+    ,"addTag": "Add tag",
+    "removeTag": "Remove {{name}}"
   }
 }

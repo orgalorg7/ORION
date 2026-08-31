@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Archive, Pencil, RotateCcw } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -7,6 +7,9 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { contactsApi } from '@/api/contacts';
 import { ActivitiesPanel } from '@/components/shared/ActivitiesPanel';
 import { NotesPanel } from '@/components/shared/NotesPanel';
+import { TimelinePanel } from '@/components/shared/TimelinePanel';
+import { CustomFieldsSummary } from '@/components/shared/CustomFieldsEditor';
+import { TagManager } from '@/components/shared/TagManager';
 import {
   Avatar,
   BackIcon,
@@ -50,11 +53,14 @@ export function ContactDetailPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: () => contactsApi.remove(contactId),
+    mutationFn: async () => {
+      if (contact?.archived_at) await contactsApi.restore(contactId);
+      else await contactsApi.remove(contactId);
+    },
     onSuccess: () => {
-      toast.success(t('common:toast.deleted'));
+      toast.success(t(contact?.archived_at ? 'common:toast.restored' : 'common:toast.archived'));
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      navigate('/app/contacts');
+      if (!contact?.archived_at) navigate('/app/contacts');
     },
     onError: (error) => toast.error(apiErrorMessage(error)),
   });
@@ -91,13 +97,13 @@ export function ContactDetailPage() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" onClick={() => setEditOpen(true)}>
+          {!contact.archived_at && <Button variant="outline" onClick={() => setEditOpen(true)}>
             <Pencil className="h-4 w-4" />
             {t('common:actions.edit')}
-          </Button>
-          <Button variant="danger" onClick={() => setDeleteOpen(true)}>
-            <Trash2 className="h-4 w-4" />
-            {t('common:actions.delete')}
+          </Button>}
+          <Button variant={contact.archived_at ? 'outline' : 'danger'} onClick={() => contact.archived_at ? deleteMutation.mutate() : setDeleteOpen(true)}>
+            {contact.archived_at ? <RotateCcw className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
+            {t(contact.archived_at ? 'common:actions.restore' : 'common:actions.archive')}
           </Button>
         </div>
       </div>
@@ -134,7 +140,7 @@ export function ContactDetailPage() {
                 <DetailRow label={t('common:labels.owner')} value={fullName(contact.owner_detail)} />
                 <DetailRow
                   label={t('common:labels.source')}
-                  value={contact.source ? t(`common:sources.${contact.source}`) : '—'}
+                  value={contact.source_detail?.label || contact.source || '—'}
                 />
                 <DetailRow
                   label={t('common:labels.city')}
@@ -159,11 +165,14 @@ export function ContactDetailPage() {
               )}
             </CardBody>
           </Card>
+          <CustomFieldsSummary values={contact.custom_fields} />
+          <TagManager type="contact" id={contactId} tags={contact.tags_detail} readOnly={Boolean(contact.archived_at)} />
         </div>
 
         <div className="space-y-6 lg:col-span-2">
-          <ActivitiesPanel related={{ contact: contactId }} />
-          <NotesPanel related={{ contact: contactId }} />
+          <ActivitiesPanel related={{ contact: contactId }} readOnly={Boolean(contact.archived_at)} />
+          <NotesPanel related={{ contact: contactId }} readOnly={Boolean(contact.archived_at)} />
+          <TimelinePanel type="contact" id={contactId} />
         </div>
       </div>
 
@@ -172,9 +181,11 @@ export function ContactDetailPage() {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onConfirm={() => deleteMutation.mutate()}
-        title={t('common:confirmDelete.title', { item: fullName(contact) })}
+        title={t('common:confirmArchive.title', { item: fullName(contact) })}
+        message={t('common:confirmArchive.message')}
         loading={deleteMutation.isPending}
-        confirmLabel={t('common:actions.delete')}
+        confirmLabel={t('common:actions.archive')}
+        danger={false}
       />
     </div>
   );

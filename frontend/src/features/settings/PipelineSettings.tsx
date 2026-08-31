@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp, Plus, Trash2, Workflow } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { pipelinesApi, stagesApi } from '@/api/deals';
+import { lostReasonsApi, pipelinesApi, productsApi, stagesApi } from '@/api/deals';
 import {
   Badge,
   Button,
@@ -12,6 +12,8 @@ import {
   ConfirmDialog,
   EmptyState,
   Input,
+  FormField,
+  Select,
   Spinner,
   toast,
 } from '@/components/ui';
@@ -54,7 +56,7 @@ function StageRow({
   }, []);
 
   const updateMutation = useMutation({
-    mutationFn: (payload: Partial<Pick<Stage, 'name' | 'probability' | 'color'>>) =>
+    mutationFn: (payload: Partial<Pick<Stage, 'name' | 'probability' | 'color' | 'stage_type'>>) =>
       stagesApi.update(stage.id, payload),
     onSuccess: () => {
       toast.success(t('common:toast.saved'));
@@ -126,6 +128,15 @@ function StageRow({
         className="h-9 min-w-32 flex-1"
       />
       <div className="flex items-center gap-1.5">
+        <Select
+          value={stage.stage_type}
+          onChange={(event) => updateMutation.mutate({ stage_type: event.target.value as Stage['stage_type'] })}
+          aria-label="Stage behavior"
+          className="h-9 w-28 text-xs"
+        >
+          <option value="open">Open</option><option value="on_hold">On hold</option>
+          <option value="won">Won</option><option value="lost">Lost</option>
+        </Select>
         <Input
           type="number"
           min={0}
@@ -183,7 +194,9 @@ function StageRow({
   );
 }
 
-function PipelineCard({ pipeline, onlyPipeline }: { pipeline: Pipeline; onlyPipeline: boolean }) {
+function PipelineCard({ pipeline, onlyPipeline, index, count, onMove }: {
+  pipeline: Pipeline; onlyPipeline: boolean; index: number; count: number; onMove: (index: number, direction: -1 | 1) => void;
+}) {
   const { t } = useTranslation(['settings', 'common']);
   const queryClient = useQueryClient();
   const [name, setName] = useState(pipeline.name);
@@ -197,7 +210,7 @@ function PipelineCard({ pipeline, onlyPipeline }: { pipeline: Pipeline; onlyPipe
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['pipelines'] });
 
   const updateMutation = useMutation({
-    mutationFn: (payload: { name?: string; is_default?: boolean }) =>
+    mutationFn: (payload: Pick<Partial<Pipeline>, 'name' | 'is_default' | 'require_lost_reason' | 'stale_activity_days' | 'stale_stage_days'>) =>
       pipelinesApi.update(pipeline.id, payload),
     onSuccess: () => {
       toast.success(t('common:toast.saved'));
@@ -235,11 +248,7 @@ function PipelineCard({ pipeline, onlyPipeline }: { pipeline: Pipeline; onlyPipe
   });
 
   const swapMutation = useMutation({
-    mutationFn: ([first, second]: [Stage, Stage]) =>
-      Promise.all([
-        stagesApi.update(first.id, { order: second.order }),
-        stagesApi.update(second.id, { order: first.order }),
-      ]),
+    mutationFn: (stageIds: number[]) => pipelinesApi.reorderStages(pipeline.id, stageIds, pipeline.version),
     onSuccess: () => {
       toast.success(t('common:toast.saved'));
       invalidate();
@@ -259,7 +268,9 @@ function PipelineCard({ pipeline, onlyPipeline }: { pipeline: Pipeline; onlyPipe
   const moveStage = (index: number, direction: -1 | 1) => {
     const target = stages[index + direction];
     if (!target) return;
-    swapMutation.mutate([stages[index], target]);
+    const reordered = stages.map((stage) => stage.id);
+    [reordered[index], reordered[index + direction]] = [reordered[index + direction], reordered[index]];
+    swapMutation.mutate(reordered);
   };
 
   return (
@@ -284,6 +295,10 @@ function PipelineCard({ pipeline, onlyPipeline }: { pipeline: Pipeline; onlyPipe
             {t('settings:pipelines.makeDefault')}
           </Button>
         )}
+        <div className="flex">
+          <Button size="sm" variant="ghost" disabled={index === 0} onClick={() => onMove(index, -1)} aria-label="Move pipeline up"><ChevronUp className="h-4 w-4" /></Button>
+          <Button size="sm" variant="ghost" disabled={index === count - 1} onClick={() => onMove(index, 1)} aria-label="Move pipeline down"><ChevronDown className="h-4 w-4" /></Button>
+        </div>
         {!onlyPipeline && (
           <button
             type="button"
@@ -298,6 +313,11 @@ function PipelineCard({ pipeline, onlyPipeline }: { pipeline: Pipeline; onlyPipe
       </div>
 
       <CardBody className="py-3">
+        <div className="mb-4 grid gap-3 rounded-lg bg-surface-muted p-3 sm:grid-cols-3">
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={pipeline.require_lost_reason} onChange={(event) => updateMutation.mutate({ require_lost_reason: event.target.checked })} />Require lost reason</label>
+          <FormField label="Stale after no activity (days)"><Input type="number" min="0" max="3650" defaultValue={pipeline.stale_activity_days} onBlur={(event) => { const value = Number(event.target.value); if (Number.isInteger(value) && value >= 0 && value !== pipeline.stale_activity_days) updateMutation.mutate({ stale_activity_days: value }); }} /></FormField>
+          <FormField label="Stale in stage (days)"><Input type="number" min="0" max="3650" defaultValue={pipeline.stale_stage_days} onBlur={(event) => { const value = Number(event.target.value); if (Number.isInteger(value) && value >= 0 && value !== pipeline.stale_stage_days) updateMutation.mutate({ stale_stage_days: value }); }} /></FormField>
+        </div>
         {stages.length === 0 ? (
           <p className="py-2 text-sm text-gray-500 dark:text-gray-400">
             {t('settings:pipelines.noStages')}
@@ -369,6 +389,17 @@ export function PipelineSettings() {
     },
     onError: (error) => toast.error(apiErrorMessage(error)),
   });
+  const reorderPipelines = useMutation({
+    mutationFn: (ids: number[]) => pipelinesApi.reorder(ids),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['pipelines'] }),
+    onError: (error) => toast.error(apiErrorMessage(error)),
+  });
+  const movePipeline = (index: number, direction: -1 | 1) => {
+    const ids = (pipelines ?? []).map((pipeline) => pipeline.id);
+    if (!ids[index + direction]) return;
+    [ids[index], ids[index + direction]] = [ids[index + direction], ids[index]];
+    reorderPipelines.mutate(ids);
+  };
 
   if (isLoading) {
     return (
@@ -408,10 +439,54 @@ export function PipelineSettings() {
           />
         </Card>
       ) : (
-        (pipelines ?? []).map((pipeline) => (
-          <PipelineCard key={pipeline.id} pipeline={pipeline} onlyPipeline={(pipelines ?? []).length === 1} />
+        (pipelines ?? []).map((pipeline, index) => (
+          <PipelineCard key={pipeline.id} pipeline={pipeline} onlyPipeline={(pipelines ?? []).length === 1}
+            index={index} count={(pipelines ?? []).length} onMove={movePipeline} />
         ))
       )}
+      <CommercialSettings />
     </div>
   );
+}
+
+function CommercialSettings() {
+  const queryClient = useQueryClient();
+  const [reason, setReason] = useState('');
+  const [product, setProduct] = useState({ name: '', sku: '', default_price: '', currency: 'USD' });
+  const { data: reasons } = useQuery({ queryKey: ['lost-reasons'], queryFn: lostReasonsApi.list });
+  const { data: products } = useQuery({ queryKey: ['products', 'settings'], queryFn: () => productsApi.list({ page_size: 100 }) });
+  const addReason = useMutation({
+    mutationFn: () => lostReasonsApi.create({ label: reason, display_order: reasons?.results.length ?? 0 }),
+    onSuccess: () => { setReason(''); queryClient.invalidateQueries({ queryKey: ['lost-reasons'] }); },
+    onError: (error) => toast.error(apiErrorMessage(error)),
+  });
+  const addProduct = useMutation({
+    mutationFn: () => productsApi.create({ ...product, default_price: product.default_price || '0' }),
+    onSuccess: () => { setProduct({ name: '', sku: '', default_price: '', currency: 'USD' }); queryClient.invalidateQueries({ queryKey: ['products'] }); },
+    onError: (error) => toast.error(apiErrorMessage(error)),
+  });
+  const updateProduct = useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: { name?: string; default_price?: string } }) =>
+      productsApi.update(id, payload),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['products'] }),
+    onError: (error) => toast.error(apiErrorMessage(error)),
+  });
+  const archiveProduct = useMutation({
+    mutationFn: (id: number) => productsApi.remove(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['products'] }),
+    onError: (error) => toast.error(apiErrorMessage(error)),
+  });
+  return <div className="grid gap-6 xl:grid-cols-2">
+    <Card><CardBody>
+      <h3 className="font-semibold">Lost reasons</h3><p className="mt-1 text-sm text-gray-500">Structured reasons keep loss analytics reliable.</p>
+      <ul className="mt-4 divide-y divide-line">{reasons?.results.map((item, index, all) => <li key={item.id} className="flex items-center gap-2 py-2 text-sm"><Input defaultValue={item.label} className="h-8 flex-1" aria-label={`Rename ${item.label}`} onBlur={(event) => { const label = event.target.value.trim(); if (label && label !== item.label) lostReasonsApi.update(item.id, { label }).then(() => queryClient.invalidateQueries({ queryKey: ['lost-reasons'] })); }} /><Button size="sm" variant="ghost" disabled={index === 0} aria-label="Move reason up" onClick={() => { const ids = all.map((reason) => reason.id); [ids[index], ids[index - 1]] = [ids[index - 1], ids[index]]; lostReasonsApi.reorder(ids).then(() => queryClient.invalidateQueries({ queryKey: ['lost-reasons'] })); }}><ChevronUp className="h-4 w-4" /></Button><Button size="sm" variant="ghost" disabled={index === all.length - 1} aria-label="Move reason down" onClick={() => { const ids = all.map((reason) => reason.id); [ids[index], ids[index + 1]] = [ids[index + 1], ids[index]]; lostReasonsApi.reorder(ids).then(() => queryClient.invalidateQueries({ queryKey: ['lost-reasons'] })); }}><ChevronDown className="h-4 w-4" /></Button><Button size="sm" variant="ghost" onClick={() => lostReasonsApi.remove(item.id).then(() => queryClient.invalidateQueries({ queryKey: ['lost-reasons'] }))}>Archive</Button></li>)}</ul>
+      <div className="mt-4 flex gap-2"><Input value={reason} onChange={(event) => setReason(event.target.value)} placeholder="New lost reason" /><Button onClick={() => addReason.mutate()} disabled={!reason.trim()} loading={addReason.isPending}>Add</Button></div>
+    </CardBody></Card>
+    <Card><CardBody>
+      <h3 className="font-semibold">Product catalog</h3><p className="mt-1 text-sm text-gray-500">Sellable CRM products, independent of warehouse inventory.</p>
+      <ul className="mt-4 divide-y divide-line">{products?.results.map((item) => <li key={item.id} className="grid items-center gap-2 py-2 text-sm sm:grid-cols-[minmax(0,1fr)_8rem_auto]"><div><Input defaultValue={item.name} className="h-8 font-medium" aria-label={`Rename ${item.name}`} onBlur={(event) => { const name = event.target.value.trim(); if (name && name !== item.name) updateProduct.mutate({ id: item.id, payload: { name } }); }} /><small className="text-gray-500">{item.sku || 'No SKU'}</small></div><FormField label={item.currency}><Input type="number" min="0" step="0.01" defaultValue={item.default_price} className="h-8" aria-label={`${item.name} default price`} onBlur={(event) => { if (event.target.value !== item.default_price) updateProduct.mutate({ id: item.id, payload: { default_price: event.target.value } }); }} /></FormField><Button size="sm" variant="ghost" onClick={() => archiveProduct.mutate(item.id)}>Archive</Button></li>)}</ul>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2"><FormField label="Product name"><Input value={product.name} onChange={(event) => setProduct({ ...product, name: event.target.value })} /></FormField><FormField label="SKU"><Input value={product.sku} onChange={(event) => setProduct({ ...product, sku: event.target.value })} /></FormField><FormField label="Default price"><Input type="number" min="0" value={product.default_price} onChange={(event) => setProduct({ ...product, default_price: event.target.value })} /></FormField><FormField label="Currency"><Input maxLength={3} value={product.currency} onChange={(event) => setProduct({ ...product, currency: event.target.value.toUpperCase() })} /></FormField></div>
+      <Button className="mt-3" onClick={() => addProduct.mutate()} disabled={!product.name.trim()} loading={addProduct.isPending}>Add product</Button>
+    </CardBody></Card>
+  </div>;
 }

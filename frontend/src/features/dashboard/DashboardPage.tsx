@@ -85,6 +85,8 @@ const ACTIVITY_ICONS: Record<ActivityType, ReactNode> = {
   email: <Mail className="h-4 w-4" />,
   meeting: <Users className="h-4 w-4" />,
   task: <CalendarCheck className="h-4 w-4" />,
+  follow_up: <CalendarCheck className="h-4 w-4" />,
+  reminder: <CalendarCheck className="h-4 w-4" />,
 };
 
 // --- Page ----------------------------------------------------------------------

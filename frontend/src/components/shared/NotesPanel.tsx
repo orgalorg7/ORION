@@ -15,7 +15,7 @@ export interface RelatedFilter {
   lead?: number;
 }
 
-export function NotesPanel({ related }: { related: RelatedFilter }) {
+export function NotesPanel({ related, readOnly = false }: { related: RelatedFilter; readOnly?: boolean }) {
   const { t } = useTranslation('common');
   const queryClient = useQueryClient();
   const [body, setBody] = useState('');
@@ -31,6 +31,8 @@ export function NotesPanel({ related }: { related: RelatedFilter }) {
     onSuccess: () => {
       setBody('');
       queryClient.invalidateQueries({ queryKey: ['notes'] });
+      const [type, id] = Object.entries(related)[0] ?? [];
+      if (type && id) queryClient.invalidateQueries({ queryKey: ['timeline', type, id] });
     },
     onError: (error) => toast.error(apiErrorMessage(error)),
   });
@@ -47,7 +49,7 @@ export function NotesPanel({ related }: { related: RelatedFilter }) {
     <Card>
       <CardHeader title={t('notes.title')} />
       <div className="space-y-4 p-5">
-        <form
+        {!readOnly && <form
           onSubmit={(event) => {
             event.preventDefault();
             if (body.trim()) createMutation.mutate();
@@ -65,7 +67,7 @@ export function NotesPanel({ related }: { related: RelatedFilter }) {
               {t('notes.add')}
             </Button>
           </div>
-        </form>
+        </form>}
 
         {isLoading ? (
           <div className="flex justify-center py-6">
@@ -86,7 +88,7 @@ export function NotesPanel({ related }: { related: RelatedFilter }) {
                         {formatDateTime(note.created_at)}
                       </span>
                     </p>
-                    <button
+                    {!readOnly && <button
                       type="button"
                       onClick={() => deleteMutation.mutate(note.id)}
                       className="text-gray-400 opacity-100 transition-opacity hover:text-red-500 sm:opacity-0 sm:group-hover:opacity-100 dark:text-gray-500"
@@ -94,7 +96,7 @@ export function NotesPanel({ related }: { related: RelatedFilter }) {
                       aria-label={t('notes.deleteNote')}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+                    </button>}
                   </div>
                   <p dir="auto" className="mt-1 whitespace-pre-wrap text-start text-sm text-gray-800 dark:text-gray-200">
                     {note.body}

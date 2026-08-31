@@ -38,6 +38,8 @@
     "export": "تصدير",
     "import": "استيراد",
     "more": "المزيد"
+    ,"archive": "أرشفة",
+    "restore": "استعادة"
   },
   "labels": {
     "name": "الاسم",
@@ -102,11 +104,17 @@
     "title": "حذف {{item}}؟",
     "message": "لا يمكن التراجع عن هذا الإجراء."
   },
+  "confirmArchive": {
+    "title": "أرشفة {{item}}؟",
+    "message": "سيختفي السجل من العروض النشطة ويمكن استعادته لاحقًا."
+  },
   "toast": {
     "saved": "تم الحفظ بنجاح",
     "created": "تم الإنشاء بنجاح",
     "deleted": "تم الحذف بنجاح",
     "error": "حدث خطأ ما"
+    ,"archived": "تمت الأرشفة بنجاح",
+    "restored": "تمت الاستعادة بنجاح"
   },
   "errors": {
     "requestFailed": "تعذر إكمال الطلب. يرجى المحاولة مرة أخرى.",
@@ -157,5 +165,56 @@
       "meeting": "اجتماع",
       "task": "مهمة"
     }
+  },
+  "customerCore": {
+    "advancedFilters": "مرشحات متقدمة",
+    "hideFilters": "إخفاء المرشحات",
+    "columns": "الأعمدة",
+    "selected": "تم تحديد {{count}}",
+    "bulkArchive": "أرشفة المحدد",
+    "bulkRestore": "استعادة المحدد",
+    "bulkStatus": "تغيير الحالة",
+    "bulkOwner": "تعيين المالك",
+    "scoreMin": "الحد الأدنى للتقييم",
+    "scoreMax": "الحد الأقصى للتقييم",
+    "lifecycle": "دورة الحياة",
+    "archived": "السجلات المؤرشفة",
+    "activeOnly": "النشطة فقط",
+    "archivedOnly": "المؤرشفة فقط",
+    "includeArchived": "كل السجلات",
+    "sort": "الترتيب",
+    "importTitle": "استيراد سجلات العملاء",
+    "uploadCsv": "اختر ملف CSV",
+    "csvHint": "ملف CSV بترميز UTF-8 وبحجم أقصى 50 ميجابايت. يتم التحقق من البيانات قبل الاستيراد.",
+    "mapColumns": "ربط الأعمدة",
+    "skipColumn": "عدم الاستيراد",
+    "processImport": "بدء الاستيراد",
+    "importComplete": "اكتمل الاستيراد",
+    "successful": "ناجح",
+    "failed": "فشل",
+    "skipped": "تم التخطي",
+    "duplicates": "تكرارات محتملة",
+    "possibleDuplicate": "تم العثور على تكرار محتمل",
+    "duplicateExplanation": "راجع السجل المطابق قبل إنشاء نسخة أخرى.",
+    "createAnyway": "إنشاء على أي حال",
+    "viewExisting": "عرض الموجود",
+    "matched": "التطابق: {{reasons}}",
+    "duplicatePolicy": "عند العثور على سجلات مكررة",
+    "skipDuplicates": "تخطي السجلات المكررة وإدراجها في التقرير",
+    "createDuplicates": "إنشاء على أي حال",
+    "rowNumber": "الصف",
+    "field": "الحقل",
+    "reason": "السبب",
+    "selectRow": "تحديد {{name}}",
+    "selectAll": "تحديد كل الصفوف الظاهرة",
+    "emptyLeads": "لا يوجد عملاء محتملون بعد. أنشئ أول عميل أو استورد قائمة عملائك.",
+    "emptyContacts": "لا توجد جهات اتصال بعد. أنشئ جهة اتصال أو استورد قائمة عملائك.",
+    "emptyCompanies": "لا توجد شركات بعد. أضف شركة أو استورد قائمة حساباتك."
+    ,"timeline": "الخط الزمني للنشاط",
+    "timelineEmpty": "لم يتم تسجيل أي سجل زمني بعد"
+    ,"customFields": "الحقول المخصصة",
+    "customFieldsEmpty": "لم يتم إعداد حقول مخصصة"
+    ,"addTag": "إضافة وسم",
+    "removeTag": "إزالة {{name}}"
   }
 }

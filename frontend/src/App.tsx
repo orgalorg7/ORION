@@ -1,34 +1,36 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { IS_DEMO } from '@/lib/api';
 
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { Toaster } from '@/components/ui';
-import { ActivitiesPage } from '@/features/activities/ActivitiesPage';
-import { LoginPage } from '@/features/auth/LoginPage';
-import { RegisterPage } from '@/features/auth/RegisterPage';
-import { CompaniesPage } from '@/features/companies/CompaniesPage';
-import { CompanyDetailPage } from '@/features/companies/CompanyDetailPage';
-import { ContactDetailPage } from '@/features/contacts/ContactDetailPage';
-import { ContactsPage } from '@/features/contacts/ContactsPage';
-import { DashboardPage } from '@/features/dashboard/DashboardPage';
-import { DealDetailPage } from '@/features/deals/DealDetailPage';
-import { DealsPage } from '@/features/deals/DealsPage';
-import { EmployeeDetailPage } from '@/features/employees/EmployeeDetailPage';
-import { EmployeesPage } from '@/features/employees/EmployeesPage';
-import { LeadDetailPage } from '@/features/leads/LeadDetailPage';
-import { LeadsPage } from '@/features/leads/LeadsPage';
-import { BillingSettings } from '@/features/settings/BillingSettings';
-import { OrganizationSettings } from '@/features/settings/OrganizationSettings';
-import { PipelineSettings } from '@/features/settings/PipelineSettings';
-import { ProfileSettings } from '@/features/settings/ProfileSettings';
-import { SettingsLayout } from '@/features/settings/SettingsLayout';
-import { TagSettings } from '@/features/settings/TagSettings';
-import { TeamSettings } from '@/features/settings/TeamSettings';
-import { TicketDetailPage } from '@/features/tickets/TicketDetailPage';
-import { TicketsPage } from '@/features/tickets/TicketsPage';
+import { Spinner, Toaster } from '@/components/ui';
 import { AuthLayout } from '@/layouts/AuthLayout';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
+
+const ActivitiesPage = lazy(() => import('@/features/activities/ActivitiesPage').then((module) => ({ default: module.ActivitiesPage })));
+const LoginPage = lazy(() => import('@/features/auth/LoginPage').then((module) => ({ default: module.LoginPage })));
+const RegisterPage = lazy(() => import('@/features/auth/RegisterPage').then((module) => ({ default: module.RegisterPage })));
+const CompaniesPage = lazy(() => import('@/features/companies/CompaniesPage').then((module) => ({ default: module.CompaniesPage })));
+const CompanyDetailPage = lazy(() => import('@/features/companies/CompanyDetailPage').then((module) => ({ default: module.CompanyDetailPage })));
+const ContactsPage = lazy(() => import('@/features/contacts/ContactsPage').then((module) => ({ default: module.ContactsPage })));
+const ContactDetailPage = lazy(() => import('@/features/contacts/ContactDetailPage').then((module) => ({ default: module.ContactDetailPage })));
+const DashboardPage = lazy(() => import('@/features/dashboard/DashboardPage').then((module) => ({ default: module.DashboardPage })));
+const DealsPage = lazy(() => import('@/features/deals/DealsPage').then((module) => ({ default: module.DealsPage })));
+const DealDetailPage = lazy(() => import('@/features/deals/DealDetailPage').then((module) => ({ default: module.DealDetailPage })));
+const EmployeesPage = lazy(() => import('@/features/employees/EmployeesPage').then((module) => ({ default: module.EmployeesPage })));
+const EmployeeDetailPage = lazy(() => import('@/features/employees/EmployeeDetailPage').then((module) => ({ default: module.EmployeeDetailPage })));
+const LeadsPage = lazy(() => import('@/features/leads/LeadsPage').then((module) => ({ default: module.LeadsPage })));
+const LeadDetailPage = lazy(() => import('@/features/leads/LeadDetailPage').then((module) => ({ default: module.LeadDetailPage })));
+const BillingSettings = lazy(() => import('@/features/settings/BillingSettings').then((module) => ({ default: module.BillingSettings })));
+const OrganizationSettings = lazy(() => import('@/features/settings/OrganizationSettings').then((module) => ({ default: module.OrganizationSettings })));
+const PipelineSettings = lazy(() => import('@/features/settings/PipelineSettings').then((module) => ({ default: module.PipelineSettings })));
+const ProfileSettings = lazy(() => import('@/features/settings/ProfileSettings').then((module) => ({ default: module.ProfileSettings })));
+const SettingsLayout = lazy(() => import('@/features/settings/SettingsLayout').then((module) => ({ default: module.SettingsLayout })));
+const TagSettings = lazy(() => import('@/features/settings/TagSettings').then((module) => ({ default: module.TagSettings })));
+const TeamSettings = lazy(() => import('@/features/settings/TeamSettings').then((module) => ({ default: module.TeamSettings })));
+const TicketsPage = lazy(() => import('@/features/tickets/TicketsPage').then((module) => ({ default: module.TicketsPage })));
+const TicketDetailPage = lazy(() => import('@/features/tickets/TicketDetailPage').then((module) => ({ default: module.TicketDetailPage })));
 
 // Artifact hosting serves a single page, so demo builds use hash-based routing.
 const Router = IS_DEMO ? HashRouter : BrowserRouter;
@@ -37,6 +39,7 @@ export default function App() {
   return (
     <Router>
       <Toaster />
+      <Suspense fallback={<div className="flex min-h-screen items-center justify-center" role="status" aria-label="Loading page"><Spinner className="h-8 w-8 text-primary-600" /></div>}>
       <Routes>
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
@@ -72,6 +75,7 @@ export default function App() {
 
         <Route path="*" element={<Navigate to="/app" replace />} />
       </Routes>
+      </Suspense>
     </Router>
   );
 }
